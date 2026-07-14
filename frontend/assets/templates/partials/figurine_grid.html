@@ -1,0 +1,7 @@
+{{define "figurine_grid"}}
+<div class="figurine-grid">
+  {{range .Figurines}}
+    {{template "figurine_card" dict . $.Active $.Next}}
+  {{end}}
+</div>
+{{end}}

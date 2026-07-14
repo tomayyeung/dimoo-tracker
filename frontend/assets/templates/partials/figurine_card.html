@@ -1,0 +1,65 @@
+{{define "figurine_card"}}
+{{$f := .Figurine}}
+<article class="figurine-card {{if eq $f.Rarity "secret"}}secret{{end}}">
+  <div class="figure-art">
+    {{if $f.ImageURL}}
+      <img src="{{$f.ImageURL}}" alt="{{$f.Name}}">
+    {{else}}
+      <span>{{$f.Character}}</span>
+    {{end}}
+  </div>
+  <div class="card-body">
+    <div class="card-title-row">
+      <h2>{{$f.Name}}</h2>
+      <span class="rarity">{{$f.Rarity}}</span>
+    </div>
+    <p>{{$f.SeriesName}}</p>
+    <p class="muted">{{$f.Character}}</p>
+  </div>
+  <div class="card-actions">
+    {{if $f.Owned}}
+      <form method="post" action="/actions/collection/remove">
+        <input type="hidden" name="figurine_id" value="{{$f.ID}}">
+        <input type="hidden" name="next" value="{{.Next}}">
+        <button class="button ghost" type="submit" hx-post="/actions/collection/remove" hx-include="closest form">Remove owned</button>
+      </form>
+    {{else}}
+      <form method="post" action="/actions/collection/add">
+        <input type="hidden" name="figurine_id" value="{{$f.ID}}">
+        <input type="hidden" name="next" value="{{.Next}}">
+        <button class="button primary" type="submit" hx-post="/actions/collection/add" hx-include="closest form">I have this</button>
+      </form>
+    {{end}}
+
+    {{if $f.Wishlisted}}
+      <form method="post" action="/actions/wishlist/remove">
+        <input type="hidden" name="figurine_id" value="{{$f.ID}}">
+        <input type="hidden" name="next" value="{{.Next}}">
+        <button class="button ghost" type="submit" hx-post="/actions/wishlist/remove" hx-include="closest form">Remove wishlist</button>
+      </form>
+    {{else}}
+      <form method="post" action="/actions/wishlist/add">
+        <input type="hidden" name="figurine_id" value="{{$f.ID}}">
+        <input type="hidden" name="next" value="{{.Next}}">
+        <button class="button soft" type="submit" hx-post="/actions/wishlist/add" hx-include="closest form">Wishlist</button>
+      </form>
+    {{end}}
+
+    {{if $f.Owned}}
+      {{if $f.OnShelf}}
+        <form method="post" action="/actions/shelf/remove">
+          <input type="hidden" name="figurine_id" value="{{$f.ID}}">
+          <input type="hidden" name="next" value="{{.Next}}">
+          <button class="button ghost" type="submit" hx-post="/actions/shelf/remove" hx-include="closest form">Remove shelf</button>
+        </form>
+      {{else}}
+        <form method="post" action="/actions/shelf/add">
+          <input type="hidden" name="figurine_id" value="{{$f.ID}}">
+          <input type="hidden" name="next" value="{{.Next}}">
+          <button class="button soft" type="submit" hx-post="/actions/shelf/add" hx-include="closest form">Feature</button>
+        </form>
+      {{end}}
+    {{end}}
+  </div>
+</article>
+{{end}}

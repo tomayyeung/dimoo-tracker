@@ -1,0 +1,17 @@
+{{define "page"}}
+<section class="page-heading">
+  <p class="eyebrow">Future finds</p>
+  <h1>Wishlist</h1>
+  <p>Figurines you want to track for later.</p>
+</section>
+
+{{if .Figurines}}
+  {{template "figurine_grid" .}}
+{{else}}
+  <section class="empty-state">
+    <h2>Your wishlist is empty.</h2>
+    <p>Add wishlist picks from the search page.</p>
+    <a class="button primary" href="/search">Browse catalog</a>
+  </section>
+{{end}}
+{{end}}

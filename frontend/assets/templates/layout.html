@@ -1,0 +1,30 @@
+{{define "layout"}}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{.Title}} | Dimoo Tracker</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="/">
+      <span class="brand-mark">D</span>
+      <span>Dimoo Tracker</span>
+    </a>
+    <nav class="tabs" aria-label="Main navigation">
+      <a class="tab {{if eq .Active "shelf"}}active{{end}}" href="/">Shelf</a>
+      <a class="tab {{if eq .Active "collection"}}active{{end}}" href="/collection">My Collection</a>
+      <a class="tab {{if eq .Active "search"}}active{{end}}" href="/search">Search</a>
+      <a class="tab {{if eq .Active "wishlist"}}active{{end}}" href="/wishlist">Wishlist</a>
+    </nav>
+  </header>
+  <main class="page-shell">
+    {{if .Error}}<div class="notice error">{{.Error}}</div>{{end}}
+    {{template "page" .}}
+  </main>
+</body>
+</html>
+{{end}}

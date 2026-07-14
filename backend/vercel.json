@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "functions": {
+    "api/**/*.go": {
+      "runtime": "go1.x"
+    }
+  },
+  "routes": [
+    { "src": "/api/health", "dest": "/api/health" },
+    { "src": "/api/series", "dest": "/api/series" },
+    { "src": "/api/figurines", "dest": "/api/figurines" },
+    { "src": "/api/collection", "dest": "/api/collection" },
+    { "src": "/api/wishlist", "dest": "/api/wishlist" },
+    { "src": "/api/shelf", "dest": "/api/shelf" }
+  ]
+}

@@ -1,0 +1,22 @@
+{{define "page"}}
+<section class="hero shelf-hero">
+  <div>
+    <p class="eyebrow">Featured picks</p>
+    <h1>Your display shelf</h1>
+    <p>Show off the figurines you want front and center. Add shelf items from My Collection.</p>
+  </div>
+  <a class="button primary" href="/collection">Choose from collection</a>
+</section>
+
+{{if .Figurines}}
+  <div class="shelf-stage">
+    {{template "figurine_grid" .}}
+  </div>
+{{else}}
+  <section class="empty-state">
+    <h2>Your shelf is waiting.</h2>
+    <p>Add figurines to your collection, then feature your favorites here.</p>
+    <a class="button primary" href="/search">Find figurines</a>
+  </section>
+{{end}}
+{{end}}

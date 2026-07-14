@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "functions": {
+    "api/**/*.go": {
+      "runtime": "go1.x"
+    }
+  },
+  "routes": [
+    { "src": "/static/(.*)", "dest": "/api/index" },
+    { "src": "/(.*)", "dest": "/api/index" }
+  ]
+}

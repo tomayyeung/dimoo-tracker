@@ -1,0 +1,48 @@
+{{define "page"}}
+<section class="page-heading compact">
+  <p class="eyebrow">Catalog</p>
+  <h1>Search Pop Mart sets</h1>
+  <p>Filter by series, character, or keyword, then mark figurines as owned or wanted.</p>
+</section>
+
+<form class="filters" hx-get="/search" hx-select="#search-results" hx-target="#search-results" hx-swap="outerHTML" hx-push-url="true">
+  <label>
+    Search
+    <input type="search" name="q" value="{{.SelectedQuery}}" placeholder="Name, set, character">
+  </label>
+  <label>
+    Series
+    <select name="series_id">
+      <option value="">All series</option>
+      {{range .Series}}
+        <option value="{{.ID}}" {{if eq $.SelectedSeries .ID}}selected{{end}}>{{.Name}}</option>
+      {{end}}
+    </select>
+  </label>
+  <label>
+    Character
+    <select name="character">
+      <option value="">All characters</option>
+      {{range .Characters}}
+        <option value="{{.}}" {{if eq $.SelectedCharacter .}}selected{{end}}>{{.}}</option>
+      {{end}}
+    </select>
+  </label>
+  <button class="button primary" type="submit">Filter</button>
+</form>
+
+{{template "search_results" .}}
+{{end}}
+
+{{define "search_results"}}
+<section id="search-results">
+  {{if .Figurines}}
+    {{template "figurine_grid" .}}
+  {{else}}
+    <section class="empty-state">
+      <h2>No matches.</h2>
+      <p>Try clearing a filter or searching another set name.</p>
+    </section>
+  {{end}}
+</section>
+{{end}}
