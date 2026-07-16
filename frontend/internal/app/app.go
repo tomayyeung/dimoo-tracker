@@ -17,21 +17,23 @@ type App struct {
 
 type PageData struct {
 	Title             string
-	Active            string
-	Error             string
+	Active            string // Selected nav tab
+	Error             string // Displays top-page error banner
 	Figurines         []backend.Figurine
-	Series            []backend.Series
-	Characters        []string
+	Series            []backend.Series // Search filter options
+	Characters        []string         // Character filter options
 	SelectedQuery     string
 	SelectedSeries    string
 	SelectedCharacter string
-	Next              string
+	Next              string // Where action handlers redirect after add/remove
 }
 
+// Create app with backend client
 func New() App {
 	return App{backend: backend.New()}
 }
 
+// Main frontend router.
 func (a App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if strings.HasPrefix(r.URL.Path, "/static/") {
 		a.static(w, r)

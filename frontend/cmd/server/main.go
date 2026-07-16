@@ -1,3 +1,4 @@
+// Local development server. Manually wires the same routes that Vercel exposes through individual functions.
 package main
 
 import (

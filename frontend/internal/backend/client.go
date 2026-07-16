@@ -125,6 +125,9 @@ func (c Client) deleteID(ctx context.Context, path, id string) error {
 	return c.do(req, nil)
 }
 
+// Centralizes response handling.
+//
+// If the backend returns an error, it tries to parse { "error": "..." } and include that message in the frontend banner.
 func (c Client) do(req *http.Request, out any) error {
 	resp, err := c.HTTP.Do(req)
 	if err != nil {

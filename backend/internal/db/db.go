@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"dimoo-tracker-backend/internal/models"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -16,6 +17,9 @@ var (
 	err  error
 )
 
+// Pool(ctx) creates a shared pgxpool.Pool using DATABASE_URL environment variable.
+// Serverless functions should not open a new raw DB connection per query.
+// Handles pooling and ensures the pool is initialized once per process/runtime instance.
 func Pool(ctx context.Context) (*pgxpool.Pool, error) {
 	once.Do(func() {
 		url := os.Getenv("DATABASE_URL")
@@ -28,6 +32,7 @@ func Pool(ctx context.Context) (*pgxpool.Pool, error) {
 	return pool, err
 }
 
+// Returns all series ordered by name.
 func Series(ctx context.Context) ([]models.Series, error) {
 	p, err := Pool(ctx)
 	if err != nil {
@@ -50,6 +55,13 @@ func Series(ctx context.Context) ([]models.Series, error) {
 	return items, rows.Err()
 }
 
+// Returns catalog figurines.
+//
+// Supports search by name, series name, or character.
+// Supports filtering by series_id.
+// Supports filtering by exact character.
+//
+// Uses EXISTS subqueries to compute owned, wishlisted, and on_shelf.
 func Figurines(ctx context.Context, q, seriesID, character string) ([]models.Figurine, error) {
 	p, err := Pool(ctx)
 	if err != nil {
@@ -82,18 +94,22 @@ func Figurines(ctx context.Context, q, seriesID, character string) ([]models.Fig
 	return items, rows.Err()
 }
 
+// Returns all owned figurines.
 func Collection(ctx context.Context) ([]models.Figurine, error) {
 	return list(ctx, "collection_items", "c.acquired_at")
 }
 
+// Returns all wishlisted figurines.
 func Wishlist(ctx context.Context) ([]models.Figurine, error) {
 	return list(ctx, "wishlist_items", "c.added_at")
 }
 
+// Returns featured shelf figurines ordered by position.
 func Shelf(ctx context.Context) ([]models.Figurine, error) {
 	return list(ctx, "shelf_items", "c.position, c.added_at")
 }
 
+// Inserts into collection_items. Uses ON CONFLICT DO NOTHING, so repeated adds are safe.
 func AddCollection(ctx context.Context, id string) error {
 	p, err := Pool(ctx)
 	if err != nil {
@@ -103,6 +119,8 @@ func AddCollection(ctx context.Context, id string) error {
 	return err
 }
 
+// Deletes from shelf_items first, then collection_items.
+// Wrapped in a transaction so a figurine cannot remain on the shelf after ownership is removed.
 func RemoveCollection(ctx context.Context, id string) error {
 	p, err := Pool(ctx)
 	if err != nil {
@@ -122,6 +140,7 @@ func RemoveCollection(ctx context.Context, id string) error {
 	return tx.Commit(ctx)
 }
 
+// Inserts into wishlist_items.
 func AddWishlist(ctx context.Context, id string) error {
 	p, err := Pool(ctx)
 	if err != nil {
@@ -131,6 +150,7 @@ func AddWishlist(ctx context.Context, id string) error {
 	return err
 }
 
+// Deletes from wishlist_items.
 func RemoveWishlist(ctx context.Context, id string) error {
 	p, err := Pool(ctx)
 	if err != nil {
@@ -140,6 +160,11 @@ func RemoveWishlist(ctx context.Context, id string) error {
 	return err
 }
 
+// Adds the figurine to collection_items first, then inserts into shelf_items.
+//
+// Assigns position using MAX(position) + 1.
+//
+// Wrapped in a transaction so shelf and collection state stay consistent.
 func AddShelf(ctx context.Context, id string) error {
 	p, err := Pool(ctx)
 	if err != nil {
@@ -162,6 +187,7 @@ func AddShelf(ctx context.Context, id string) error {
 	return tx.Commit(ctx)
 }
 
+// Deletes only from shelf_items.
 func RemoveShelf(ctx context.Context, id string) error {
 	p, err := Pool(ctx)
 	if err != nil {
@@ -193,6 +219,7 @@ func Characters(ctx context.Context) ([]string, error) {
 	return items, rows.Err()
 }
 
+// Joins the selected item table to figurines and series, then returns the same enriched Figurine shape.
 func list(ctx context.Context, table, order string) ([]models.Figurine, error) {
 	p, err := Pool(ctx)
 	if err != nil {
