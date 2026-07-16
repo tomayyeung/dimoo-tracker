@@ -21,10 +21,14 @@
       <a class="tab {{if eq .Active "wishlist"}}active{{end}}" href="/wishlist">Wishlist</a>
     </nav>
   </header>
-  <main class="page-shell">
-    {{if .Error}}<div class="notice error">{{.Error}}</div>{{end}}
-    {{template "page" .}}
-  </main>
+  {{template "page_shell" .}}
 </body>
 </html>
+{{end}}
+
+{{define "page_shell"}}
+<main class="page-shell">
+  {{if .Error}}<div class="notice error">{{.Error}}</div>{{end}}
+  {{template "page" .}}
+</main>
 {{end}}

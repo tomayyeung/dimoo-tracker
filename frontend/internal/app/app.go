@@ -3,6 +3,7 @@ package app
 import (
 	"html/template"
 	"net/http"
+	"net/url"
 	"path"
 	"sort"
 	"strings"
@@ -168,11 +169,81 @@ func (a App) action(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if r.Header.Get("HX-Request") == "true" {
-		w.Header().Set("HX-Redirect", next)
-		w.WriteHeader(http.StatusNoContent)
+		if a.renderNextFigurineCard(w, r, id, next) {
+			return
+		}
+		a.renderNextPageShell(w, r, next)
 		return
 	}
 	http.Redirect(w, r, next, http.StatusSeeOther)
+}
+
+func (a App) renderNextFigurineCard(w http.ResponseWriter, r *http.Request, id, next string) bool {
+	u, err := url.ParseRequestURI(next)
+	if err != nil || u.Path != "/search" {
+		return false
+	}
+
+	query := u.Query()
+	items, err := a.backend.Figurines(r.Context(), query.Get("q"), query.Get("series_id"), query.Get("character"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadGateway)
+		return true
+	}
+	for _, item := range items {
+		if item.ID == id {
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			_ = a.templates("search.html").ExecuteTemplate(w, "figurine_card", map[string]any{
+				"Figurine": item,
+				"Active":   "search",
+				"Next":     next,
+			})
+			return true
+		}
+	}
+	w.WriteHeader(http.StatusNoContent)
+	return true
+}
+
+func (a App) renderNextPageShell(w http.ResponseWriter, r *http.Request, next string) {
+	page, data := a.pageForNext(r, next)
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	_ = a.templates(page).ExecuteTemplate(w, "page_shell", data)
+}
+
+func (a App) pageForNext(r *http.Request, next string) (string, PageData) {
+	u, err := url.ParseRequestURI(next)
+	if err != nil || u.Path == "" {
+		u = &url.URL{Path: "/"}
+	}
+
+	switch u.Path {
+	case "/collection":
+		items, err := a.backend.Collection(r.Context())
+		data := PageData{Title: "My Collection", Active: "collection", Figurines: items, Next: "/collection"}
+		if err != nil {
+			data.Error = err.Error()
+		}
+		return "collection.html", data
+	case "/search":
+		nextReq := r.Clone(r.Context())
+		nextReq.URL = u
+		return "search.html", a.searchData(nil, nextReq)
+	case "/wishlist":
+		items, err := a.backend.Wishlist(r.Context())
+		data := PageData{Title: "Wishlist", Active: "wishlist", Figurines: items, Next: "/wishlist"}
+		if err != nil {
+			data.Error = err.Error()
+		}
+		return "wishlist.html", data
+	default:
+		items, err := a.backend.Shelf(r.Context())
+		data := PageData{Title: "Shelf", Active: "shelf", Figurines: items, Next: "/"}
+		if err != nil {
+			data.Error = err.Error()
+		}
+		return "shelf.html", data
+	}
 }
 
 func (a App) static(w http.ResponseWriter, r *http.Request) {

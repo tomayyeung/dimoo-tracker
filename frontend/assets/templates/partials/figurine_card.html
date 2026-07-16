@@ -18,45 +18,45 @@
   </div>
   <div class="card-actions">
     {{if $f.Owned}}
-      <form method="post" action="/actions/collection/remove">
+      <form method="post" action="/actions/collection/remove" hx-post="/actions/collection/remove" hx-target="{{if eq .Active "search"}}closest .figurine-card{{else}}main.page-shell{{end}}" hx-select="{{if eq .Active "search"}}.figurine-card{{else}}main.page-shell{{end}}" hx-swap="outerHTML show:none focus-scroll:false">
         <input type="hidden" name="figurine_id" value="{{$f.ID}}">
         <input type="hidden" name="next" value="{{.Next}}">
-        <button class="button ghost" type="submit" hx-post="/actions/collection/remove" hx-include="closest form">Remove owned</button>
+        <button class="button ghost" type="submit">Remove owned</button>
       </form>
     {{else}}
-      <form method="post" action="/actions/collection/add">
+      <form method="post" action="/actions/collection/add" hx-post="/actions/collection/add" hx-target="{{if eq .Active "search"}}closest .figurine-card{{else}}main.page-shell{{end}}" hx-select="{{if eq .Active "search"}}.figurine-card{{else}}main.page-shell{{end}}" hx-swap="outerHTML show:none focus-scroll:false">
         <input type="hidden" name="figurine_id" value="{{$f.ID}}">
         <input type="hidden" name="next" value="{{.Next}}">
-        <button class="button primary" type="submit" hx-post="/actions/collection/add" hx-include="closest form">I have this</button>
+        <button class="button primary" type="submit">I have this</button>
       </form>
     {{end}}
 
     {{if $f.Wishlisted}}
-      <form method="post" action="/actions/wishlist/remove">
+      <form method="post" action="/actions/wishlist/remove" hx-post="/actions/wishlist/remove" hx-target="{{if eq .Active "search"}}closest .figurine-card{{else}}main.page-shell{{end}}" hx-select="{{if eq .Active "search"}}.figurine-card{{else}}main.page-shell{{end}}" hx-swap="outerHTML show:none focus-scroll:false">
         <input type="hidden" name="figurine_id" value="{{$f.ID}}">
         <input type="hidden" name="next" value="{{.Next}}">
-        <button class="button ghost" type="submit" hx-post="/actions/wishlist/remove" hx-include="closest form">Remove wishlist</button>
+        <button class="button ghost" type="submit">Remove wishlist</button>
       </form>
     {{else}}
-      <form method="post" action="/actions/wishlist/add">
+      <form method="post" action="/actions/wishlist/add" hx-post="/actions/wishlist/add" hx-target="{{if eq .Active "search"}}closest .figurine-card{{else}}main.page-shell{{end}}" hx-select="{{if eq .Active "search"}}.figurine-card{{else}}main.page-shell{{end}}" hx-swap="outerHTML show:none focus-scroll:false">
         <input type="hidden" name="figurine_id" value="{{$f.ID}}">
         <input type="hidden" name="next" value="{{.Next}}">
-        <button class="button soft" type="submit" hx-post="/actions/wishlist/add" hx-include="closest form">Wishlist</button>
+        <button class="button soft" type="submit">Wishlist</button>
       </form>
     {{end}}
 
     {{if $f.Owned}}
       {{if $f.OnShelf}}
-        <form method="post" action="/actions/shelf/remove">
+        <form method="post" action="/actions/shelf/remove" hx-post="/actions/shelf/remove" hx-target="{{if eq .Active "search"}}closest .figurine-card{{else}}main.page-shell{{end}}" hx-select="{{if eq .Active "search"}}.figurine-card{{else}}main.page-shell{{end}}" hx-swap="outerHTML show:none focus-scroll:false">
           <input type="hidden" name="figurine_id" value="{{$f.ID}}">
           <input type="hidden" name="next" value="{{.Next}}">
-          <button class="button ghost" type="submit" hx-post="/actions/shelf/remove" hx-include="closest form">Remove shelf</button>
+          <button class="button ghost" type="submit">Remove shelf</button>
         </form>
       {{else}}
-        <form method="post" action="/actions/shelf/add">
+        <form method="post" action="/actions/shelf/add" hx-post="/actions/shelf/add" hx-target="{{if eq .Active "search"}}closest .figurine-card{{else}}main.page-shell{{end}}" hx-select="{{if eq .Active "search"}}.figurine-card{{else}}main.page-shell{{end}}" hx-swap="outerHTML show:none focus-scroll:false">
           <input type="hidden" name="figurine_id" value="{{$f.ID}}">
           <input type="hidden" name="next" value="{{.Next}}">
-          <button class="button soft" type="submit" hx-post="/actions/shelf/add" hx-include="closest form">Feature</button>
+          <button class="button soft" type="submit">Feature</button>
         </form>
       {{end}}
     {{end}}
