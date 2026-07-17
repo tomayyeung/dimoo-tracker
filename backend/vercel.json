@@ -1,10 +1,5 @@
 {
   "version": 2,
-  "functions": {
-    "api/**/*.go": {
-      "runtime": "go1.x"
-    }
-  },
   "routes": [
     { "src": "/api/health", "dest": "/api/health" },
     { "src": "/api/series", "dest": "/api/series" },
