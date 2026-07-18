@@ -1,6 +1,7 @@
 .env
 .env.local
 .vercel
+.DS_Store
 tmp/
 dist/
 node_modules/

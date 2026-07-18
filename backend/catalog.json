@@ -1,0 +1,50 @@
+{
+  "storage_base_url": "https://hbmkecliyvmyqubrieuo.supabase.co/storage/v1/object/public/figurines",
+  "series": [
+    {
+      "name": "DIMOO Dream Travel",
+      "slug": "dimoo-dream-travel",
+      "ip": "Dimoo",
+      "release_year": 2023,
+      "image_path": "dimoo-dream-travel",
+      "figurines": [
+        {
+          "name": "Cloud Boarding Pass",
+          "slug": "cloud-boarding-pass",
+          "rarity": "standard",
+          "image_path": "cloud-boarding-pass.jpeg"
+        }
+      ]
+    },
+    {
+      "name": "Dimoo Animal Kingdom",
+      "slug": "dimoo-animal-kingdom",
+      "ip": "Dimoo",
+      "release_year": 2022,
+      "image_path": "dimoo-animal-kingdom",
+      "figurines": [
+        {
+          "name": "Bear Hoodie Nap",
+          "slug": "bear-hoodie-nap",
+          "rarity": "standard",
+          "image_path": "bear-hoodie-nap.png"
+        }
+      ]
+    },
+    {
+      "name": "Dimoo Space Journey",
+      "slug": "dimoo-space-journey",
+      "ip": "Dimoo",
+      "release_year": 2024,
+      "image_path": "dimoo-space-journey",
+      "figurines": [
+        {
+          "name": "Galaxy Secret",
+          "slug": "galaxy-secret",
+          "rarity": "secret",
+          "image_path": "galaxy-secret.jpeg"
+        }
+      ]
+    }
+  ]
+}

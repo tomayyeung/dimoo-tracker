@@ -2,13 +2,13 @@
 <section class="page-heading compact">
   <p class="eyebrow">Catalog</p>
   <h1>Search Pop Mart sets</h1>
-  <p>Filter by series, character, or keyword, then mark figurines as owned or wanted.</p>
+  <p>Filter by series, character/collaboration, or keyword, then mark figurines as owned or wanted.</p>
 </section>
 
 <form class="filters" hx-get="/search" hx-select="#search-results" hx-target="#search-results" hx-swap="outerHTML" hx-push-url="true">
   <label>
     Search
-    <input type="search" name="q" value="{{.SelectedQuery}}" placeholder="Name, set, character">
+    <input type="search" name="q" value="{{.SelectedQuery}}" placeholder="Name, set, character/collaboration">
   </label>
   <label>
     Series
@@ -20,11 +20,11 @@
     </select>
   </label>
   <label>
-    Character
-    <select name="character">
-      <option value="">All characters</option>
-      {{range .Characters}}
-        <option value="{{.}}" {{if eq $.SelectedCharacter .}}selected{{end}}>{{.}}</option>
+    Character/Collaboration
+    <select name="ip">
+      <option value="">All characters/collaborations</option>
+      {{range .IPs}}
+        <option value="{{.}}" {{if eq $.SelectedIP .}}selected{{end}}>{{.}}</option>
       {{end}}
     </select>
   </label>

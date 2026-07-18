@@ -5,7 +5,7 @@
     {{if $f.ImageURL}}
       <img src="{{$f.ImageURL}}" alt="{{$f.Name}}">
     {{else}}
-      <span>{{$f.Character}}</span>
+      <span>{{$f.Name}}</span>
     {{end}}
   </div>
   <div class="card-body">
@@ -14,7 +14,6 @@
       <span class="rarity">{{$f.Rarity}}</span>
     </div>
     <p>{{$f.SeriesName}}</p>
-    <p class="muted">{{$f.Character}}</p>
   </div>
   <div class="card-actions">
     {{if $f.Owned}}

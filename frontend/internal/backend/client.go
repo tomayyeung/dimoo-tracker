@@ -21,7 +21,7 @@ type Client struct {
 type Series struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
-	Theme       string `json:"theme"`
+	IP          string `json:"ip"`
 	ReleaseYear int    `json:"release_year"`
 }
 
@@ -30,7 +30,6 @@ type Figurine struct {
 	SeriesID   string `json:"series_id"`
 	SeriesName string `json:"series_name"`
 	Name       string `json:"name"`
-	Character  string `json:"character"`
 	Rarity     string `json:"rarity"`
 	ImageURL   string `json:"image_url"`
 	Owned      bool   `json:"owned"`
@@ -51,11 +50,11 @@ func (c Client) Series(ctx context.Context) ([]Series, error) {
 	return items, c.get(ctx, "/api/series", &items)
 }
 
-func (c Client) Figurines(ctx context.Context, q, seriesID, character string) ([]Figurine, error) {
+func (c Client) Figurines(ctx context.Context, q, seriesID, ip string) ([]Figurine, error) {
 	values := url.Values{}
 	values.Set("q", q)
 	values.Set("series_id", seriesID)
-	values.Set("character", character)
+	values.Set("ip", ip)
 	var items []Figurine
 	return items, c.get(ctx, "/api/figurines?"+values.Encode(), &items)
 }

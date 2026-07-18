@@ -4,7 +4,7 @@ package models
 type Series struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
-	Theme       string `json:"theme"`
+	IP          string `json:"ip"` // Intellectual property (Dimoo, Minions, etc)
 	ReleaseYear int    `json:"release_year,omitempty"`
 }
 
@@ -14,7 +14,6 @@ type Figurine struct {
 	SeriesID   string `json:"series_id"`
 	SeriesName string `json:"series_name"`
 	Name       string `json:"name"`
-	Character  string `json:"character"`
 	Rarity     string `json:"rarity"`
 	ImageURL   string `json:"image_url"`
 	Owned      bool   `json:"owned"`

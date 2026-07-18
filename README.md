@@ -34,9 +34,62 @@ Create a PostgreSQL database, then run the migrations in order:
 ```sh
 psql "$DATABASE_URL" -f backend/migrations/001_init.sql
 psql "$DATABASE_URL" -f backend/migrations/002_seed.sql
+psql "$DATABASE_URL" -f backend/migrations/003_catalog_slugs.sql
 ```
 
 The schema uses `pgcrypto` for UUID generation.
+
+## Catalog Imports
+
+Catalog metadata can be maintained in `backend/catalog.json` and imported into PostgreSQL. The importer upserts series by `slug` and figurines by `(series_id, slug)`, so it is safe to rerun after editing names, rarity, or image paths.
+
+Run the slug/image-path migration before importing:
+
+```sh
+psql "$DATABASE_URL" -f backend/migrations/003_catalog_slugs.sql
+```
+
+Then import:
+
+```sh
+cd backend
+go run ./cmd/import-catalog ./catalog.json
+```
+
+The catalog uses a shared Supabase Storage base URL, a series-level folder, and a figurine-level filename:
+
+```json
+{
+  "storage_base_url": "https://YOUR_PROJECT_ID.supabase.co/storage/v1/object/public/figurines",
+  "series": [
+    {
+      "name": "Dimoo Dream Travel",
+      "slug": "dimoo-dream-travel",
+      "image_path": "dimoo-dream-travel",
+      "figurines": [
+        {
+          "name": "Cloud Boarding Pass",
+          "slug": "cloud-boarding-pass",
+          "image_path": "cloud-boarding-pass.webp"
+        }
+      ]
+    }
+  ]
+}
+```
+
+The importer builds `figurines.image_url` as:
+
+```text
+{storage_base_url}/{series.image_path}/{figurine.image_path}
+```
+
+For Supabase Storage, upload files to the public `figurines` bucket like:
+
+```text
+dimoo-dream-travel/cloud-boarding-pass.webp
+dimoo-dream-travel/moonlit-suitcase.webp
+```
 
 ## Local Backend
 

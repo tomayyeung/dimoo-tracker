@@ -16,7 +16,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	query := r.URL.Query()
-	items, err := db.Figurines(r.Context(), query.Get("q"), query.Get("series_id"), query.Get("character"))
+	items, err := db.Figurines(r.Context(), query.Get("q"), query.Get("series_id"), query.Get("ip"))
 	if err != nil {
 		httpx.Error(w, http.StatusInternalServerError, err.Error())
 		return

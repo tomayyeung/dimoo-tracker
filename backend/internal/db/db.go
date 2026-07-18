@@ -38,7 +38,7 @@ func Series(ctx context.Context) ([]models.Series, error) {
 	if err != nil {
 		return nil, err
 	}
-	rows, err := p.Query(ctx, `SELECT id::text, name, theme, COALESCE(release_year, 0) FROM series ORDER BY name`)
+	rows, err := p.Query(ctx, `SELECT id::text, name, ip, COALESCE(release_year, 0) FROM series ORDER BY name`)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func Series(ctx context.Context) ([]models.Series, error) {
 	var items []models.Series
 	for rows.Next() {
 		var item models.Series
-		if err := rows.Scan(&item.ID, &item.Name, &item.Theme, &item.ReleaseYear); err != nil {
+		if err := rows.Scan(&item.ID, &item.Name, &item.IP, &item.ReleaseYear); err != nil {
 			return nil, err
 		}
 		items = append(items, item)
@@ -57,27 +57,27 @@ func Series(ctx context.Context) ([]models.Series, error) {
 
 // Returns catalog figurines.
 //
-// Supports search by name, series name, or character.
+// Supports search by name, series name, or intellectual property.
 // Supports filtering by series_id.
-// Supports filtering by exact character.
+// Supports filtering by exact intellectual property.
 //
 // Uses EXISTS subqueries to compute owned, wishlisted, and on_shelf.
-func Figurines(ctx context.Context, q, seriesID, character string) ([]models.Figurine, error) {
+func Figurines(ctx context.Context, q, seriesID, ip string) ([]models.Figurine, error) {
 	p, err := Pool(ctx)
 	if err != nil {
 		return nil, err
 	}
 	rows, err := p.Query(ctx, `
-		SELECT f.id::text, f.series_id::text, s.name, f.name, f.character, f.rarity, f.image_url,
+		SELECT f.id::text, f.series_id::text, s.name, f.name, f.rarity, f.image_url,
 		       EXISTS (SELECT 1 FROM collection_items c WHERE c.figurine_id = f.id) AS owned,
 		       EXISTS (SELECT 1 FROM wishlist_items w WHERE w.figurine_id = f.id) AS wishlisted,
 		       EXISTS (SELECT 1 FROM shelf_items sh WHERE sh.figurine_id = f.id) AS on_shelf
 		FROM figurines f
 		JOIN series s ON s.id = f.series_id
-		WHERE ($1 = '' OR f.name ILIKE '%' || $1 || '%' OR s.name ILIKE '%' || $1 || '%' OR f.character ILIKE '%' || $1 || '%')
+		WHERE ($1 = '' OR f.name ILIKE '%' || $1 || '%' OR s.name ILIKE '%' || $1 || '%' OR s.ip ILIKE '%' || $1 || '%')
 		  AND ($2 = '' OR f.series_id::text = $2)
-		  AND ($3 = '' OR f.character = $3)
-		ORDER BY s.name, f.name`, q, seriesID, character)
+		  AND ($3 = '' OR s.ip = $3)
+		ORDER BY s.name, f.name`, q, seriesID, ip)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +86,7 @@ func Figurines(ctx context.Context, q, seriesID, character string) ([]models.Fig
 	var items []models.Figurine
 	for rows.Next() {
 		var item models.Figurine
-		if err := rows.Scan(&item.ID, &item.SeriesID, &item.SeriesName, &item.Name, &item.Character, &item.Rarity, &item.ImageURL, &item.Owned, &item.Wishlisted, &item.OnShelf); err != nil {
+		if err := rows.Scan(&item.ID, &item.SeriesID, &item.SeriesName, &item.Name, &item.Rarity, &item.ImageURL, &item.Owned, &item.Wishlisted, &item.OnShelf); err != nil {
 			return nil, err
 		}
 		items = append(items, item)
@@ -197,12 +197,12 @@ func RemoveShelf(ctx context.Context, id string) error {
 	return err
 }
 
-func Characters(ctx context.Context) ([]string, error) {
+func IPs(ctx context.Context) ([]string, error) {
 	p, err := Pool(ctx)
 	if err != nil {
 		return nil, err
 	}
-	rows, err := p.Query(ctx, `SELECT DISTINCT character FROM figurines ORDER BY character`)
+	rows, err := p.Query(ctx, `SELECT DISTINCT ip FROM series WHERE ip <> '' ORDER BY ip`)
 	if err != nil {
 		return nil, err
 	}
@@ -226,7 +226,7 @@ func list(ctx context.Context, table, order string) ([]models.Figurine, error) {
 		return nil, err
 	}
 	rows, err := p.Query(ctx, `
-		SELECT f.id::text, f.series_id::text, s.name, f.name, f.character, f.rarity, f.image_url,
+		SELECT f.id::text, f.series_id::text, s.name, f.name, f.rarity, f.image_url,
 		       EXISTS (SELECT 1 FROM collection_items ci WHERE ci.figurine_id = f.id) AS owned,
 		       EXISTS (SELECT 1 FROM wishlist_items wi WHERE wi.figurine_id = f.id) AS wishlisted,
 		       EXISTS (SELECT 1 FROM shelf_items si WHERE si.figurine_id = f.id) AS on_shelf
@@ -242,7 +242,7 @@ func list(ctx context.Context, table, order string) ([]models.Figurine, error) {
 	var items []models.Figurine
 	for rows.Next() {
 		var item models.Figurine
-		if err := rows.Scan(&item.ID, &item.SeriesID, &item.SeriesName, &item.Name, &item.Character, &item.Rarity, &item.ImageURL, &item.Owned, &item.Wishlisted, &item.OnShelf); err != nil {
+		if err := rows.Scan(&item.ID, &item.SeriesID, &item.SeriesName, &item.Name, &item.Rarity, &item.ImageURL, &item.Owned, &item.Wishlisted, &item.OnShelf); err != nil {
 			return nil, err
 		}
 		items = append(items, item)

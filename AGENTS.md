@@ -22,11 +22,14 @@
 - PostgreSQL migrations must be run manually and in order:
   - `psql "$DATABASE_URL" -f backend/migrations/001_init.sql`
   - `psql "$DATABASE_URL" -f backend/migrations/002_seed.sql`
+  - `psql "$DATABASE_URL" -f backend/migrations/003_catalog_slugs.sql`
+- Catalog data lives at `backend/catalog.json` and can be imported with `cd backend && go run ./cmd/import-catalog ./catalog.json` after migration `003`.
 
 ## Backend Notes
 
 - Vercel API entrypoints live under `backend/api/*/index.go`; local routing is wired manually in `backend/cmd/server/main.go`.
 - Shared backend DB code is in `backend/internal/db/db.go`; it uses `DATABASE_URL` via `pgxpool`.
+- Catalog importer entrypoint is `backend/cmd/import-catalog/main.go`; it upserts by `series.slug` and `(series_id, figurine.slug)`.
 - The app is intentionally single-user for now. Do not add auth/user tables unless explicitly requested.
 
 ## Frontend Notes

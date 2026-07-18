@@ -17,16 +17,16 @@ type App struct {
 }
 
 type PageData struct {
-	Title             string
-	Active            string // Selected nav tab
-	Error             string // Displays top-page error banner
-	Figurines         []backend.Figurine
-	Series            []backend.Series // Search filter options
-	Characters        []string         // Character filter options
-	SelectedQuery     string
-	SelectedSeries    string
-	SelectedCharacter string
-	Next              string // Where action handlers redirect after add/remove
+	Title          string
+	Active         string // Selected nav tab
+	Error          string // Displays top-page error banner
+	Figurines      []backend.Figurine
+	Series         []backend.Series // Search filter options
+	IPs            []string         // Character/collaboration filter options
+	SelectedQuery  string
+	SelectedSeries string
+	SelectedIP     string
+	Next           string // Where action handlers redirect after add/remove
 }
 
 // Create app with backend client
@@ -95,7 +95,7 @@ func (a App) searchPartial(w http.ResponseWriter, r *http.Request) {
 
 func (a App) searchData(_ http.ResponseWriter, r *http.Request) PageData {
 	query := r.URL.Query()
-	items, err := a.backend.Figurines(r.Context(), query.Get("q"), query.Get("series_id"), query.Get("character"))
+	items, err := a.backend.Figurines(r.Context(), query.Get("q"), query.Get("series_id"), query.Get("ip"))
 	series, seriesErr := a.backend.Series(r.Context())
 	next := r.URL.RequestURI()
 	if strings.HasPrefix(next, "/partials/search") {
@@ -105,15 +105,15 @@ func (a App) searchData(_ http.ResponseWriter, r *http.Request) PageData {
 		}
 	}
 	data := PageData{
-		Title:             "Search",
-		Active:            "search",
-		Figurines:         items,
-		Series:            series,
-		Characters:        characters(items),
-		SelectedQuery:     query.Get("q"),
-		SelectedSeries:    query.Get("series_id"),
-		SelectedCharacter: query.Get("character"),
-		Next:              next,
+		Title:          "Search",
+		Active:         "search",
+		Figurines:      items,
+		Series:         series,
+		IPs:            ips(series),
+		SelectedQuery:  query.Get("q"),
+		SelectedSeries: query.Get("series_id"),
+		SelectedIP:     query.Get("ip"),
+		Next:           next,
 	}
 	if err != nil {
 		data.Error = err.Error()
@@ -185,7 +185,7 @@ func (a App) renderNextFigurineCard(w http.ResponseWriter, r *http.Request, id, 
 	}
 
 	query := u.Query()
-	items, err := a.backend.Figurines(r.Context(), query.Get("q"), query.Get("series_id"), query.Get("character"))
+	items, err := a.backend.Figurines(r.Context(), query.Get("q"), query.Get("series_id"), query.Get("ip"))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadGateway)
 		return true
@@ -283,10 +283,12 @@ func (a App) templates(page string) *template.Template {
 	return t
 }
 
-func characters(items []backend.Figurine) []string {
+func ips(series []backend.Series) []string {
 	seen := map[string]bool{}
-	for _, item := range items {
-		seen[item.Character] = true
+	for _, item := range series {
+		if item.IP != "" {
+			seen[item.IP] = true
+		}
 	}
 	var out []string
 	for item := range seen {
