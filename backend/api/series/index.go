@@ -1,3 +1,4 @@
+// Package handler exposes the Vercel function for catalog series routes.
 package handler
 
 import (
@@ -7,6 +8,7 @@ import (
 	"dimoo-tracker-backend/internal/httpx"
 )
 
+// Handler serves GET /api/series.
 func Handler(w http.ResponseWriter, r *http.Request) {
 	if httpx.WithCORS(w, r) {
 		return

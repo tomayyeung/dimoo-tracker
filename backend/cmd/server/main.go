@@ -1,4 +1,6 @@
-// Local development server. Manually wires the same routes that Vercel exposes through individual functions.
+// Command server runs the local backend development server.
+//
+// It manually wires the same routes that Vercel exposes through individual functions.
 package main
 
 import (

@@ -1,3 +1,4 @@
+// Package handler exposes the Vercel function for wishlist item routes.
 package handler
 
 import (
@@ -9,6 +10,10 @@ import (
 	"dimoo-tracker-backend/internal/models"
 )
 
+// Handler serves /api/wishlist requests.
+//
+// GET returns wishlisted figurines, POST accepts {"figurine_id":"..."}, and
+// DELETE removes the item identified by the id query parameter.
 func Handler(w http.ResponseWriter, r *http.Request) {
 	if httpx.WithCORS(w, r) {
 		return

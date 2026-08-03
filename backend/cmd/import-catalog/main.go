@@ -1,3 +1,4 @@
+// Command import-catalog imports catalog.json into PostgreSQL.
 package main
 
 import (
@@ -12,6 +13,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+// Catalog is the root JSON shape consumed by the catalog importer.
 type Catalog struct {
 	StorageBaseURL string          `json:"storage_base_url"`
 	Series         []catalogSeries `json:"series"`
@@ -67,6 +69,7 @@ func main() {
 	log.Printf("imported %d series", len(catalog.Series))
 }
 
+// readCatalog loads and decodes catalog JSON from file.
 func readCatalog(file string) (Catalog, error) {
 	data, err := os.ReadFile(file)
 	if err != nil {
@@ -79,6 +82,7 @@ func readCatalog(file string) (Catalog, error) {
 	return catalog, nil
 }
 
+// validateCatalog checks the importer requirements before writing to the database.
 func validateCatalog(catalog Catalog) error {
 	if strings.TrimSpace(catalog.StorageBaseURL) == "" {
 		return errors.New("storage_base_url is required")
@@ -122,6 +126,7 @@ func validateCatalog(catalog Catalog) error {
 	return nil
 }
 
+// importCatalog upserts series and figurines in a single transaction.
 func importCatalog(ctx context.Context, pool *pgxpool.Pool, catalog Catalog) error {
 	tx, err := pool.Begin(ctx)
 	if err != nil {
@@ -160,14 +165,17 @@ func importCatalog(ctx context.Context, pool *pgxpool.Pool, catalog Catalog) err
 	return tx.Commit(ctx)
 }
 
+// buildImageURL combines the storage base URL, series folder, and figurine file.
 func buildImageURL(baseURL, seriesPath, figurinePath string) string {
 	return strings.TrimRight(baseURL, "/") + "/" + trimSlashes(seriesPath) + "/" + trimSlashes(figurinePath)
 }
 
+// trimSlashes normalizes catalog path fragments before URL construction.
 func trimSlashes(value string) string {
 	return strings.Trim(strings.TrimSpace(value), "/")
 }
 
+// loadDotEnv loads .env values for local runs without overwriting existing variables.
 func loadDotEnv() {
 	data, err := os.ReadFile(".env")
 	if err != nil {

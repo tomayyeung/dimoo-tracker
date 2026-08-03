@@ -1,3 +1,4 @@
+// Package app contains the Go-rendered HTMX frontend application.
 package app
 
 import (
@@ -12,10 +13,12 @@ import (
 	"dimoo-tracker-frontend/internal/backend"
 )
 
+// App routes frontend requests and renders embedded templates.
 type App struct {
 	backend backend.Client
 }
 
+// PageData is the template data shared by full pages and HTMX fragments.
 type PageData struct {
 	Title          string
 	Active         string // Selected nav tab
@@ -29,12 +32,12 @@ type PageData struct {
 	Next           string // Where action handlers redirect after add/remove
 }
 
-// Create app with backend client
+// New creates an app with a backend API client.
 func New() App {
 	return App{backend: backend.New()}
 }
 
-// Main frontend router.
+// ServeHTTP routes static assets, HTMX actions, partials, and full pages.
 func (a App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if strings.HasPrefix(r.URL.Path, "/static/") {
 		a.static(w, r)
@@ -93,6 +96,7 @@ func (a App) searchPartial(w http.ResponseWriter, r *http.Request) {
 	_ = t.ExecuteTemplate(w, "search_results", data)
 }
 
+// searchData fetches catalog data and preserves filter state for search renders.
 func (a App) searchData(_ http.ResponseWriter, r *http.Request) PageData {
 	query := r.URL.Query()
 	items, err := a.backend.Figurines(r.Context(), query.Get("q"), query.Get("series_id"), query.Get("ip"))
@@ -132,6 +136,10 @@ func (a App) wishlist(w http.ResponseWriter, r *http.Request) {
 	a.render(w, "wishlist.html", data)
 }
 
+// action applies collection, wishlist, and shelf mutations from form posts.
+//
+// HTMX requests receive either a refreshed card fragment on search or a refreshed
+// page shell elsewhere. Non-HTMX requests redirect back to the submitted next URL.
 func (a App) action(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -178,6 +186,7 @@ func (a App) action(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, next, http.StatusSeeOther)
 }
 
+// renderNextFigurineCard refreshes one search result card after an HTMX action.
 func (a App) renderNextFigurineCard(w http.ResponseWriter, r *http.Request, id, next string) bool {
 	u, err := url.ParseRequestURI(next)
 	if err != nil || u.Path != "/search" {
@@ -205,12 +214,14 @@ func (a App) renderNextFigurineCard(w http.ResponseWriter, r *http.Request, id, 
 	return true
 }
 
+// renderNextPageShell refreshes the main page region after an HTMX action.
 func (a App) renderNextPageShell(w http.ResponseWriter, r *http.Request, next string) {
 	page, data := a.pageForNext(r, next)
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	_ = a.templates(page).ExecuteTemplate(w, "page_shell", data)
 }
 
+// pageForNext maps a safe local next URL to the template and data needed to re-render it.
 func (a App) pageForNext(r *http.Request, next string) (string, PageData) {
 	u, err := url.ParseRequestURI(next)
 	if err != nil || u.Path == "" {
@@ -266,6 +277,7 @@ func (a App) render(w http.ResponseWriter, page string, data PageData) {
 	_ = a.templates(page).ExecuteTemplate(w, "layout", data)
 }
 
+// templates parses the layout, requested page, and shared partial templates.
 func (a App) templates(page string) *template.Template {
 	t, err := template.New("layout.html").Funcs(template.FuncMap{
 		"eq": func(a, b string) bool { return a == b },
@@ -283,6 +295,7 @@ func (a App) templates(page string) *template.Template {
 	return t
 }
 
+// ips returns sorted unique intellectual property names from series data.
 func ips(series []backend.Series) []string {
 	seen := map[string]bool{}
 	for _, item := range series {

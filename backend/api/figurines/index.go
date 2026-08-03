@@ -1,3 +1,4 @@
+// Package handler exposes the Vercel function for figurine catalog routes.
 package handler
 
 import (
@@ -7,6 +8,7 @@ import (
 	"dimoo-tracker-backend/internal/httpx"
 )
 
+// Handler serves GET /api/figurines with optional q, series_id, and ip filters.
 func Handler(w http.ResponseWriter, r *http.Request) {
 	if httpx.WithCORS(w, r) {
 		return

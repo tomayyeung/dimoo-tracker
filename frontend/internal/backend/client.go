@@ -1,3 +1,4 @@
+// Package backend provides the frontend's HTTP client for the JSON backend API.
 package backend
 
 import (
@@ -13,11 +14,13 @@ import (
 	"time"
 )
 
+// Client calls the backend API from frontend route handlers.
 type Client struct {
 	BaseURL string
 	HTTP    *http.Client
 }
 
+// Series mirrors the backend series response used by search filters.
 type Series struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
@@ -25,6 +28,7 @@ type Series struct {
 	ReleaseYear int    `json:"release_year"`
 }
 
+// Figurine mirrors the backend figurine response used by page templates.
 type Figurine struct {
 	ID         string `json:"id"`
 	SeriesID   string `json:"series_id"`
@@ -37,6 +41,7 @@ type Figurine struct {
 	OnShelf    bool   `json:"on_shelf"`
 }
 
+// New creates a backend client using API_BASE_URL, defaulting to local backend.
 func New() Client {
 	base := strings.TrimRight(os.Getenv("API_BASE_URL"), "/")
 	if base == "" {
@@ -45,11 +50,13 @@ func New() Client {
 	return Client{BaseURL: base, HTTP: &http.Client{Timeout: 8 * time.Second}}
 }
 
+// Series returns all catalog series from the backend.
 func (c Client) Series(ctx context.Context) ([]Series, error) {
 	var items []Series
 	return items, c.get(ctx, "/api/series", &items)
 }
 
+// Figurines returns catalog figurines matching the optional filters.
 func (c Client) Figurines(ctx context.Context, q, seriesID, ip string) ([]Figurine, error) {
 	values := url.Values{}
 	values.Set("q", q)
@@ -59,41 +66,50 @@ func (c Client) Figurines(ctx context.Context, q, seriesID, ip string) ([]Figuri
 	return items, c.get(ctx, "/api/figurines?"+values.Encode(), &items)
 }
 
+// Collection returns figurines marked as owned.
 func (c Client) Collection(ctx context.Context) ([]Figurine, error) {
 	var items []Figurine
 	return items, c.get(ctx, "/api/collection", &items)
 }
 
+// Wishlist returns figurines marked as wanted.
 func (c Client) Wishlist(ctx context.Context) ([]Figurine, error) {
 	var items []Figurine
 	return items, c.get(ctx, "/api/wishlist", &items)
 }
 
+// Shelf returns figurines featured on the display shelf.
 func (c Client) Shelf(ctx context.Context) ([]Figurine, error) {
 	var items []Figurine
 	return items, c.get(ctx, "/api/shelf", &items)
 }
 
+// AddCollection marks a figurine as owned.
 func (c Client) AddCollection(ctx context.Context, id string) error {
 	return c.postID(ctx, "/api/collection", id)
 }
 
+// RemoveCollection removes a figurine from the owned collection.
 func (c Client) RemoveCollection(ctx context.Context, id string) error {
 	return c.deleteID(ctx, "/api/collection", id)
 }
 
+// AddWishlist marks a figurine as wanted.
 func (c Client) AddWishlist(ctx context.Context, id string) error {
 	return c.postID(ctx, "/api/wishlist", id)
 }
 
+// RemoveWishlist removes a figurine from the wishlist.
 func (c Client) RemoveWishlist(ctx context.Context, id string) error {
 	return c.deleteID(ctx, "/api/wishlist", id)
 }
 
+// AddShelf features a figurine on the display shelf.
 func (c Client) AddShelf(ctx context.Context, id string) error {
 	return c.postID(ctx, "/api/shelf", id)
 }
 
+// RemoveShelf removes a figurine from the display shelf.
 func (c Client) RemoveShelf(ctx context.Context, id string) error {
 	return c.deleteID(ctx, "/api/shelf", id)
 }
@@ -124,7 +140,7 @@ func (c Client) deleteID(ctx context.Context, path, id string) error {
 	return c.do(req, nil)
 }
 
-// Centralizes response handling.
+// do centralizes response handling.
 //
 // If the backend returns an error, it tries to parse { "error": "..." } and include that message in the frontend banner.
 func (c Client) do(req *http.Request, out any) error {

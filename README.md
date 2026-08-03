@@ -35,6 +35,7 @@ Create a PostgreSQL database, then run the migrations in order:
 psql "$DATABASE_URL" -f backend/migrations/001_init.sql
 psql "$DATABASE_URL" -f backend/migrations/002_seed.sql
 psql "$DATABASE_URL" -f backend/migrations/003_catalog_slugs.sql
+psql "$DATABASE_URL" -f backend/migrations/004_series_ip.sql
 ```
 
 The schema uses `pgcrypto` for UUID generation.
@@ -43,10 +44,11 @@ The schema uses `pgcrypto` for UUID generation.
 
 Catalog metadata can be maintained in `backend/catalog.json` and imported into PostgreSQL. The importer upserts series by `slug` and figurines by `(series_id, slug)`, so it is safe to rerun after editing names, rarity, or image paths.
 
-Run the slug/image-path migration before importing:
+Run the slug/image-path and IP migrations before importing:
 
 ```sh
 psql "$DATABASE_URL" -f backend/migrations/003_catalog_slugs.sql
+psql "$DATABASE_URL" -f backend/migrations/004_series_ip.sql
 ```
 
 Then import:
@@ -65,11 +67,13 @@ The catalog uses a shared Supabase Storage base URL, a series-level folder, and 
     {
       "name": "Dimoo Dream Travel",
       "slug": "dimoo-dream-travel",
+      "ip": "Dimoo",
       "image_path": "dimoo-dream-travel",
       "figurines": [
         {
           "name": "Cloud Boarding Pass",
           "slug": "cloud-boarding-pass",
+          "rarity": "standard",
           "image_path": "cloud-boarding-pass.webp"
         }
       ]
@@ -115,7 +119,7 @@ The frontend listens on `http://localhost:3000` by default.
 
 - `GET /api/health`
 - `GET /api/series`
-- `GET /api/figurines?q=&series_id=&character=`
+- `GET /api/figurines?q=&series_id=&ip=`
 - `GET /api/collection`
 - `POST /api/collection` with `{ "figurine_id": "..." }`
 - `DELETE /api/collection?id=...`
