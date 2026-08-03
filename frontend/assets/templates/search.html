@@ -1,8 +1,8 @@
 {{define "page"}}
 <section class="page-heading compact">
   <p class="eyebrow">Catalog</p>
-  <h1>Search Pop Mart sets</h1>
-  <p>Filter by series, character/collaboration, or keyword, then mark figurines as owned or wanted.</p>
+  <h1>Find a figure</h1>
+  <p class="subtitle">Search by name, series, or character, then mark figures as owned or wanted.</p>
 </section>
 
 <form class="filters" hx-get="/search" hx-select="#search-results" hx-target="#search-results" hx-swap="outerHTML" hx-push-url="true">
@@ -28,7 +28,7 @@
       {{end}}
     </select>
   </label>
-  <button class="button primary" type="submit">Filter</button>
+  <button class="button primary" type="submit">Search</button>
 </form>
 
 {{template "search_results" .}}
