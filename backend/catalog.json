@@ -2,47 +2,524 @@
   "storage_base_url": "https://hbmkecliyvmyqubrieuo.supabase.co/storage/v1/object/public/figurines",
   "series": [
     {
-      "name": "DIMOO Dream Travel",
-      "slug": "dimoo-dream-travel",
+      "name": "DIMOO Memories We Hold",
+      "slug": "dimoo-memories-we-hold",
       "ip": "Dimoo",
-      "release_year": 2023,
-      "image_path": "dimoo-dream-travel",
+      "release_year": 2025,
+      "image_path": "dimoo-memories-we-hold",
       "figurines": [
         {
-          "name": "Cloud Boarding Pass",
-          "slug": "cloud-boarding-pass",
+          "name": "Kiteland",
+          "slug": "kiteland",
           "rarity": "standard",
-          "image_path": "cloud-boarding-pass.jpeg"
+          "image_path": "kiteland.webp"
+        },
+        {
+          "name": "Summer on the Grass",
+          "slug": "summer-on-the-grass",
+          "rarity": "standard",
+          "image_path": "summer-on-the-grass.webp"
+        },
+        {
+          "name": "Bad Morning",
+          "slug": "bad-morning",
+          "rarity": "standard",
+          "image_path": "bad-morning.webp"
+        },
+        {
+          "name": "Blooms From the Mud",
+          "slug": "blooms-from-the-mud",
+          "rarity": "standard",
+          "image_path": "blooms-from-the-mud.webp"
+        },
+        {
+          "name": "Cosmic Dream",
+          "slug": "cosmic-dream",
+          "rarity": "standard",
+          "image_path": "cosmic-dream.webp"
+        },
+        {
+          "name": "First Swim",
+          "slug": "first-swim",
+          "rarity": "standard",
+          "image_path": "first-swim.webp"
+        },
+        {
+          "name": "Path of Whispering Lilies",
+          "slug": "path-of-whispering-lilies",
+          "rarity": "standard",
+          "image_path": "path-of-whispering-lilies.webp"
+        },
+        {
+          "name": "Purring Thread",
+          "slug": "purring-thread",
+          "rarity": "standard",
+          "image_path": "purring-thread.webp"
+        },
+        {
+          "name": "Rainbow After Storm",
+          "slug": "rainbow-after-storm",
+          "rarity": "standard",
+          "image_path": "rainbow-after-storm.webp"
+        },
+        {
+          "name": "Snowfield Swing",
+          "slug": "snowfield-swing",
+          "rarity": "standard",
+          "image_path": "snowfield-swing.webp"
+        },
+        {
+          "name": "The Goodbye I Cannot Say",
+          "slug": "the-goodbye-i-cannot-say",
+          "rarity": "standard",
+          "image_path": "the-goodbye-i-cannot-say.webp"
+        },
+        {
+          "name": "The Hourglass",
+          "slug": "the-hourglass",
+          "rarity": "standard",
+          "image_path": "the-hourglass.webp"
+        },
+        {
+          "name": "In Your Arms",
+          "slug": "in-your-arms",
+          "rarity": "secret",
+          "image_path": "in-your-arms.webp"
         }
       ]
     },
     {
-      "name": "Dimoo Animal Kingdom",
+      "name": "DIMOO Shapes in Nature",
+      "slug": "dimoo-shapes-in-nature",
+      "ip": "Dimoo",
+      "release_year": 2025,
+      "image_path": "dimoo-shapes-in-nature",
+      "figurines": [
+        {
+          "name": "Cloud Whisper",
+          "slug": "cloud-whisper",
+          "rarity": "standard",
+          "image_path": "cloud-whisper.webp"
+        },
+        {
+          "name": "Fallen Leaves",
+          "slug": "fallen-leaves",
+          "rarity": "standard",
+          "image_path": "fallen-leaves.webp"
+        },
+        {
+          "name": "Hearing",
+          "slug": "hearing",
+          "rarity": "standard",
+          "image_path": "hearing.webp"
+        },
+        {
+          "name": "Melting Ice",
+          "slug": "melting-ice",
+          "rarity": "standard",
+          "image_path": "melting-ice.webp"
+        },
+        {
+          "name": "Newborn Soul",
+          "slug": "newborn-soul",
+          "rarity": "standard",
+          "image_path": "newborn-soul.webp"
+        },
+        {
+          "name": "Parting Clouds",
+          "slug": "parting-clouds",
+          "rarity": "standard",
+          "image_path": "parting-clouds.webp"
+        },
+        {
+          "name": "Rising Wind",
+          "slug": "rising-wind",
+          "rarity": "standard",
+          "image_path": "rising-wind.webp"
+        },
+        {
+          "name": "Seeing",
+          "slug": "seeing",
+          "rarity": "standard",
+          "image_path": "seeing.webp"
+        },
+        {
+          "name": "The Raindrop",
+          "slug": "the-raindrop",
+          "rarity": "standard",
+          "image_path": "the-raindrop.webp"
+        },
+        {
+          "name": "Touching",
+          "slug": "touching",
+          "rarity": "standard",
+          "image_path": "touching.webp"
+        },
+        {
+          "name": "Weathered Rock",
+          "slug": "weathered-rock",
+          "rarity": "standard",
+          "image_path": "weathered-rock.webp"
+        },
+        {
+          "name": "Withering Flowers",
+          "slug": "withering-flowers",
+          "rarity": "standard",
+          "image_path": "withering-flowers.webp"
+        },
+        {
+          "name": "Upward Growth",
+          "slug": "upward-growth",
+          "rarity": "secret",
+          "image_path": "upward-growth.webp"
+        }
+      ]
+    },
+    {
+      "name": "DIMOO Stories in the Cup",
+      "slug": "dimoo-stories-in-the-cup",
+      "ip": "Dimoo",
+      "release_year": 2024,
+      "image_path": "dimoo-stories-in-the-cup",
+      "figurines": [
+        {
+          "name": "Auspicious Animal Seal",
+          "slug": "auspicious-animal-seal",
+          "rarity": "standard",
+          "image_path": "auspicious-animal-seal.webp"
+        },
+        {
+          "name": "Black and White Game",
+          "slug": "black-and-white-game",
+          "rarity": "standard",
+          "image_path": "black-and-white-game.webp"
+        },
+        {
+          "name": "Exhale Like an Orchid",
+          "slug": "exhale-like-an-orchid",
+          "rarity": "standard",
+          "image_path": "exhale-like-an-orchid.webp"
+        },
+        {
+          "name": "Ink Bamboo Painting",
+          "slug": "ink-bamboo-painting",
+          "rarity": "standard",
+          "image_path": "ink-bamboo-painting.webp"
+        },
+        {
+          "name": "Porcelain Blossoms",
+          "slug": "porcelain-blossoms",
+          "rarity": "standard",
+          "image_path": "porcelain-blossoms.webp"
+        },
+        {
+          "name": "Propitious Jades",
+          "slug": "propitious-jades",
+          "rarity": "standard",
+          "image_path": "propitious-jades.webp"
+        },
+        {
+          "name": "River Scroll",
+          "slug": "river-scroll",
+          "rarity": "standard",
+          "image_path": "river-scroll.webp"
+        },
+        {
+          "name": "Rooftop Guardian Creatures",
+          "slug": "rooftop-guardian-creatures",
+          "rarity": "standard",
+          "image_path": "rooftop-guardian-creatures.webp"
+        },
+        {
+          "name": "Sachet Lotus",
+          "slug": "sachet-lotus",
+          "rarity": "standard",
+          "image_path": "sachet-lotus.webp"
+        },
+        {
+          "name": "Sandalwood Incense Burner",
+          "slug": "sandalwood-incense-burner",
+          "rarity": "standard",
+          "image_path": "sandalwood-incense-burner.webp"
+        },
+        {
+          "name": "Snow and Wintersweet",
+          "slug": "snow-and-wintersweet",
+          "rarity": "standard",
+          "image_path": "snow-and-wintersweet.webp"
+        },
+        {
+          "name": "Spring Brings Springtime",
+          "slug": "spring-brings-springtime",
+          "rarity": "standard",
+          "image_path": "spring-brings-springtime.webp"
+        },
+        {
+          "name": "Drunkenness",
+          "slug": "drunkenness",
+          "rarity": "secret",
+          "image_path": "drunkenness.webp"
+        }
+      ]
+    },
+    {
+      "name": "DIMOO Animal Kingdom",
       "slug": "dimoo-animal-kingdom",
       "ip": "Dimoo",
-      "release_year": 2022,
+      "release_year": 2024,
       "image_path": "dimoo-animal-kingdom",
       "figurines": [
         {
-          "name": "Bear Hoodie Nap",
-          "slug": "bear-hoodie-nap",
+          "name": "Baby Elephant Bubble",
+          "slug": "baby-elephant-bubble",
           "rarity": "standard",
-          "image_path": "bear-hoodie-nap.png"
+          "image_path": "baby-elephant-bubble.webp"
+        },
+        {
+          "name": "Bear Dad",
+          "slug": "bear-dad",
+          "rarity": "standard",
+          "image_path": "bear-dad.webp"
+        },
+        {
+          "name": "Crocodile Cleaner",
+          "slug": "crocodile-cleaner",
+          "rarity": "standard",
+          "image_path": "crocodile-cleaner.webp"
+        },
+        {
+          "name": "Duckling Leader",
+          "slug": "duckling-leader",
+          "rarity": "standard",
+          "image_path": "duckling-leader.webp"
+        },
+        {
+          "name": "Foodie Giraffe",
+          "slug": "foodie-giraffe",
+          "rarity": "standard",
+          "image_path": "foodie-giraffe.webp"
+        },
+        {
+          "name": "Penguin Tango",
+          "slug": "penguin-tango",
+          "rarity": "standard",
+          "image_path": "penguin-tango.webp"
+        },
+        {
+          "name": "Red Panda With Apple",
+          "slug": "red-panda-with-apple",
+          "rarity": "standard",
+          "image_path": "red-panda-with-apple.webp"
+        },
+        {
+          "name": "Sleeping Bunny",
+          "slug": "sleeping-bunny",
+          "rarity": "standard",
+          "image_path": "sleeping-bunny.webp"
+        },
+        {
+          "name": "Sleepy Koala",
+          "slug": "sleepy-koala",
+          "rarity": "standard",
+          "image_path": "sleepy-koala.webp"
+        },
+        {
+          "name": "Taichi Panda",
+          "slug": "taichi-panda",
+          "rarity": "standard",
+          "image_path": "taichi-panda.webp"
+        },
+        {
+          "name": "Tigers Learn to Walk",
+          "slug": "tigers-learn-to-walk",
+          "rarity": "standard",
+          "image_path": "tigers-learn-to-walk.webp"
+        },
+        {
+          "name": "Warm Polar Bear",
+          "slug": "warm-polar-bear",
+          "rarity": "standard",
+          "image_path": "warm-polar-bear.webp"
+        },
+        {
+          "name": "Monkey Catches the Moon",
+          "slug": "monkey-catches-the-moon",
+          "rarity": "secret",
+          "image_path": "monkey-catches-the-moon.webp"
         }
       ]
     },
     {
-      "name": "Dimoo Space Journey",
-      "slug": "dimoo-space-journey",
+      "name": "DIMOO Moments in Bloom",
+      "slug": "dimoo-moments-in-bloom",
       "ip": "Dimoo",
-      "release_year": 2024,
-      "image_path": "dimoo-space-journey",
+      "release_year": 2026,
+      "image_path": "dimoo-moments-in-bloom",
       "figurines": [
         {
-          "name": "Galaxy Secret",
-          "slug": "galaxy-secret",
+          "name": "A Breath of Blossoms",
+          "slug": "a-breath-of-blossoms",
+          "rarity": "standard",
+          "image_path": "a-breath-of-blossoms.webp"
+        },
+        {
+          "name": "Catching Spring",
+          "slug": "catching-spring",
+          "rarity": "standard",
+          "image_path": "catching-spring.webp"
+        },
+        {
+          "name": "Caught by Spring",
+          "slug": "caught-by-spring",
+          "rarity": "standard",
+          "image_path": "caught-by-spring.webp"
+        },
+        {
+          "name": "Falling into Flowers",
+          "slug": "falling-into-flowers",
+          "rarity": "standard",
+          "image_path": "falling-into-flowers.webp"
+        },
+        {
+          "name": "Flying Through Spring",
+          "slug": "flying-through-spring",
+          "rarity": "standard",
+          "image_path": "flying-through-spring.webp"
+        },
+        {
+          "name": "Hugging Spring",
+          "slug": "hugging-spring",
+          "rarity": "standard",
+          "image_path": "hugging-spring.webp"
+        },
+        {
+          "name": "It Lives in My Boot",
+          "slug": "it-lives-in-my-boot",
+          "rarity": "standard",
+          "image_path": "it-lives-in-my-boot.webp"
+        },
+        {
+          "name": "Packed With Spring",
+          "slug": "packed-with-spring",
+          "rarity": "standard",
+          "image_path": "packed-with-spring.webp"
+        },
+        {
+          "name": "Spring's Trumpet",
+          "slug": "spring's-trumpet",
+          "rarity": "standard",
+          "image_path": "spring's-trumpet.webp"
+        },
+        {
+          "name": "Spring Overhead",
+          "slug": "spring-overhead",
+          "rarity": "standard",
+          "image_path": "spring-overhead.webp"
+        },
+        {
+          "name": "Spring Recoil",
+          "slug": "spring-recoil",
+          "rarity": "standard",
+          "image_path": "spring-recoil.webp"
+        },
+        {
+          "name": "Take Me to Spring",
+          "slug": "take-me-to-spring",
+          "rarity": "standard",
+          "image_path": "take-me-to-spring.webp"
+        },
+        {
+          "name": "Light Up Spring",
+          "slug": "light-up-spring",
           "rarity": "secret",
-          "image_path": "galaxy-secret.jpeg"
+          "image_path": "light-up-spring.webp"
+        }
+      ]
+    },
+    {
+      "name": "DIMOO The Missing Day",
+      "slug": "dimoo-the-missing-day",
+      "ip": "Dimoo",
+      "release_year": 2025,
+      "image_path": "dimoo-the-missing-day",
+      "figurines": [
+        {
+          "name": "A Call Between Worlds",
+          "slug": "a-call-between-worlds",
+          "rarity": "standard",
+          "image_path": "a-call-between-worlds.webp"
+        },
+        {
+          "name": "A Story Only I Can Tell",
+          "slug": "a-story-only-i-can-tell",
+          "rarity": "standard",
+          "image_path": "a-story-only-i-can-tell.webp"
+        },
+        {
+          "name": "Air My Soul in the Sun",
+          "slug": "air-my-soul-in-the-sun",
+          "rarity": "standard",
+          "image_path": "air-my-soul-in-the-sun.webp"
+        },
+        {
+          "name": "Blooming Button",
+          "slug": "blooming-button",
+          "rarity": "standard",
+          "image_path": "blooming-button.webp"
+        },
+        {
+          "name": "Dancing on Clouds",
+          "slug": "dancing-on-clouds",
+          "rarity": "standard",
+          "image_path": "dancing-on-clouds.webp"
+        },
+        {
+          "name": "Melt into Me",
+          "slug": "melt-into-me",
+          "rarity": "standard",
+          "image_path": "melt-into-me.webp"
+        },
+        {
+          "name": "My Pillow Beats",
+          "slug": "my-pillow-beats",
+          "rarity": "standard",
+          "image_path": "my-pillow-beats.webp"
+        },
+        {
+          "name": "Puppy Sock",
+          "slug": "puppy-sock",
+          "rarity": "standard",
+          "image_path": "puppy-sock.webp"
+        },
+        {
+          "name": "Quacky Stroll",
+          "slug": "quacky-stroll",
+          "rarity": "standard",
+          "image_path": "quacky-stroll.webp"
+        },
+        {
+          "name": "Soaking in a Dream",
+          "slug": "soaking-in-a-dream",
+          "rarity": "standard",
+          "image_path": "soaking-in-a-dream.webp"
+        },
+        {
+          "name": "Soul Trails",
+          "slug": "soul-trails",
+          "rarity": "standard",
+          "image_path": "soul-trails.webp"
+        },
+        {
+          "name": "Unlocking Time",
+          "slug": "unlocking-time",
+          "rarity": "standard",
+          "image_path": "unlocking-time.webp"
+        },
+        {
+          "name": "Where Days Don't Count",
+          "slug": "where-days-don't-count",
+          "rarity": "secret",
+          "image_path": "where-days-don't-count.webp"
         }
       ]
     }
