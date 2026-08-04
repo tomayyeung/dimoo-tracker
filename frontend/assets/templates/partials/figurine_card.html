@@ -11,7 +11,7 @@
   <div class="card-body">
     <div class="card-title-row">
       <h2>{{$f.Name}}</h2>
-      <span class="rarity">{{$f.Rarity}}</span>
+      <span class="rarity">{{if eq $f.Rarity "secret"}}★ {{end}}{{$f.Rarity}}</span>
     </div>
     <p>{{$f.SeriesName}}</p>
   </div>

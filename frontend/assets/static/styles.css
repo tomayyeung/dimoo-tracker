@@ -224,13 +224,23 @@ input:focus, select:focus, .button:focus-visible, .tab:focus-visible {
 .muted { color: var(--muted); }
 
 .rarity {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
   padding: 0.25rem 0.5rem;
   color: #875146;
   background: var(--accent-soft);
+  border: 1px solid transparent;
   border-radius: 0.5rem;
   font-size: 0.7rem;
   font-weight: 750;
   text-transform: uppercase;
+}
+
+.figurine-card.secret .rarity {
+  color: #7a4a00;
+  background: #fff0b8;
+  border-color: #f0c552;
 }
 
 .card-actions {
