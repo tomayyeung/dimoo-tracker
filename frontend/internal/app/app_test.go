@@ -103,6 +103,95 @@ func TestSearchSendsIPFilter(t *testing.T) {
 	}
 }
 
+func TestSearchFiltersRenderInDependentOrder(t *testing.T) {
+	backend := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.URL.Path {
+		case "/api/series":
+			_, _ = w.Write([]byte(`[
+				{"id":"series-1","name":"Dimoo Dream Travel","ip":"Dimoo","release_year":2024},
+				{"id":"series-2","name":"Minions Party","ip":"Minions","release_year":2024}
+			]`))
+		case "/api/figurines":
+			if got := r.URL.Query().Get("series_id"); got != "" {
+				t.Fatalf("figurines request series_id = %q, want empty without ip", got)
+			}
+			_, _ = w.Write([]byte(`[]`))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer backend.Close()
+
+	t.Setenv("API_BASE_URL", backend.URL)
+	req := httptest.NewRequest(http.MethodGet, "/search?series_id=series-1", nil)
+	rec := httptest.NewRecorder()
+
+	New().ServeHTTP(rec, req)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("search returned %d: %s", rec.Code, rec.Body.String())
+	}
+	body := rec.Body.String()
+	characterIndex := strings.Index(body, "Character/Collaboration")
+	seriesIndex := strings.Index(body, "Series")
+	keywordIndex := strings.Index(body, "Keyword")
+	if characterIndex == -1 || seriesIndex == -1 || keywordIndex == -1 {
+		t.Fatalf("search filters missing expected labels: %s", body)
+	}
+	if !(characterIndex < seriesIndex && seriesIndex < keywordIndex) {
+		t.Fatalf("filters rendered in wrong order: character=%d series=%d keyword=%d", characterIndex, seriesIndex, keywordIndex)
+	}
+	if !strings.Contains(body, `<select name="series_id" disabled>`) {
+		t.Fatal("series select should be disabled until an IP is selected")
+	}
+	if strings.Contains(body, `<option value="series-1"`) || strings.Contains(body, `<option value="series-2"`) {
+		t.Fatal("series options should not render until an IP is selected")
+	}
+}
+
+func TestSearchSeriesOptionsRequireSelectedIP(t *testing.T) {
+	backend := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.URL.Path {
+		case "/api/series":
+			_, _ = w.Write([]byte(`[
+				{"id":"series-1","name":"Dimoo Dream Travel","ip":"Dimoo","release_year":2024},
+				{"id":"series-2","name":"Minions Party","ip":"Minions","release_year":2024}
+			]`))
+		case "/api/figurines":
+			if got := r.URL.Query().Get("ip"); got != "Dimoo" {
+				t.Fatalf("figurines request ip = %q, want Dimoo", got)
+			}
+			if got := r.URL.Query().Get("series_id"); got != "" {
+				t.Fatalf("figurines request series_id = %q, want empty for non-Dimoo series", got)
+			}
+			_, _ = w.Write([]byte(`[]`))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer backend.Close()
+
+	t.Setenv("API_BASE_URL", backend.URL)
+	req := httptest.NewRequest(http.MethodGet, "/search?ip=Dimoo&series_id=series-2", nil)
+	rec := httptest.NewRecorder()
+
+	New().ServeHTTP(rec, req)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("search returned %d: %s", rec.Code, rec.Body.String())
+	}
+	body := rec.Body.String()
+	if strings.Contains(body, `<select name="series_id" disabled>`) {
+		t.Fatal("series select should be enabled when an IP is selected")
+	}
+	if !strings.Contains(body, `<option value="series-1"`) {
+		t.Fatal("series select should include series for the selected IP")
+	}
+	if strings.Contains(body, `<option value="series-2"`) {
+		t.Fatal("series select should exclude series from other IPs")
+	}
+}
+
 func TestHTMXSearchActionReturnsFigurineCardFragment(t *testing.T) {
 	backend := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

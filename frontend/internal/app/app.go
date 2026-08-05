@@ -26,6 +26,7 @@ type PageData struct {
 	Figurines      []backend.Figurine
 	Series         []backend.Series // Search filter options
 	IPs            []string         // Character/collaboration filter options
+	SeriesDisabled bool             // Series requires a selected character/collaboration
 	SelectedQuery  string
 	SelectedSeries string
 	SelectedIP     string
@@ -99,8 +100,11 @@ func (a App) searchPartial(w http.ResponseWriter, r *http.Request) {
 // searchData fetches catalog data and preserves filter state for search renders.
 func (a App) searchData(_ http.ResponseWriter, r *http.Request) PageData {
 	query := r.URL.Query()
-	items, err := a.backend.Figurines(r.Context(), query.Get("q"), query.Get("series_id"), query.Get("ip"))
 	series, seriesErr := a.backend.Series(r.Context())
+	selectedIP := query.Get("ip")
+	seriesOptions := seriesForIP(series, selectedIP)
+	selectedSeries := validSeriesID(query.Get("series_id"), seriesOptions)
+	items, err := a.backend.Figurines(r.Context(), query.Get("q"), selectedSeries, selectedIP)
 	next := r.URL.RequestURI()
 	if strings.HasPrefix(next, "/partials/search") {
 		next = "/search"
@@ -112,11 +116,12 @@ func (a App) searchData(_ http.ResponseWriter, r *http.Request) PageData {
 		Title:          "Search",
 		Active:         "search",
 		Figurines:      items,
-		Series:         series,
+		Series:         seriesOptions,
 		IPs:            ips(series),
+		SeriesDisabled: selectedIP == "",
 		SelectedQuery:  query.Get("q"),
-		SelectedSeries: query.Get("series_id"),
-		SelectedIP:     query.Get("ip"),
+		SelectedSeries: selectedSeries,
+		SelectedIP:     selectedIP,
 		Next:           next,
 	}
 	if err != nil {
@@ -194,7 +199,16 @@ func (a App) renderNextFigurineCard(w http.ResponseWriter, r *http.Request, id, 
 	}
 
 	query := u.Query()
-	items, err := a.backend.Figurines(r.Context(), query.Get("q"), query.Get("series_id"), query.Get("ip"))
+	selectedSeries := ""
+	if query.Get("ip") != "" {
+		series, seriesErr := a.backend.Series(r.Context())
+		if seriesErr != nil {
+			http.Error(w, seriesErr.Error(), http.StatusBadGateway)
+			return true
+		}
+		selectedSeries = validSeriesID(query.Get("series_id"), seriesForIP(series, query.Get("ip")))
+	}
+	items, err := a.backend.Figurines(r.Context(), query.Get("q"), selectedSeries, query.Get("ip"))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadGateway)
 		return true
@@ -309,4 +323,29 @@ func ips(series []backend.Series) []string {
 	}
 	sort.Strings(out)
 	return out
+}
+
+func seriesForIP(series []backend.Series, ip string) []backend.Series {
+	if ip == "" {
+		return nil
+	}
+	var out []backend.Series
+	for _, item := range series {
+		if item.IP == ip {
+			out = append(out, item)
+		}
+	}
+	return out
+}
+
+func validSeriesID(id string, series []backend.Series) string {
+	if id == "" {
+		return ""
+	}
+	for _, item := range series {
+		if item.ID == id {
+			return id
+		}
+	}
+	return ""
 }

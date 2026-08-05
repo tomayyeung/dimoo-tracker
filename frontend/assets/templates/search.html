@@ -2,36 +2,38 @@
 <section class="page-heading compact">
   <p class="eyebrow">Catalog</p>
   <h1>Find a figure</h1>
-  <p class="subtitle">Search by name, series, or character, then mark figures as owned or wanted.</p>
+  <p class="subtitle">Choose a character or collaboration, optionally narrow by series, then search by keyword.</p>
 </section>
 
-<form class="filters" hx-get="/search" hx-select="#search-results" hx-target="#search-results" hx-swap="outerHTML" hx-push-url="true">
-  <label>
-    Search
-    <input type="search" name="q" value="{{.SelectedQuery}}" placeholder="Name, set, character/collaboration">
-  </label>
-  <label>
-    Series
-    <select name="series_id">
-      <option value="">All series</option>
-      {{range .Series}}
-        <option value="{{.ID}}" {{if eq $.SelectedSeries .ID}}selected{{end}}>{{.Name}}</option>
-      {{end}}
-    </select>
-  </label>
+<div id="search-panel">
+<form class="filters" hx-get="/search" hx-select="#search-panel" hx-target="#search-panel" hx-swap="outerHTML" hx-push-url="true">
   <label>
     Character/Collaboration
-    <select name="ip">
+    <select name="ip" onchange="this.form.requestSubmit()">
       <option value="">All characters/collaborations</option>
       {{range .IPs}}
         <option value="{{.}}" {{if eq $.SelectedIP .}}selected{{end}}>{{.}}</option>
       {{end}}
     </select>
   </label>
+  <label>
+    Series
+    <select name="series_id" {{if .SeriesDisabled}}disabled{{end}}>
+      <option value="">{{if .SeriesDisabled}}Select a character/collaboration first{{else}}All series{{end}}</option>
+      {{range .Series}}
+        <option value="{{.ID}}" {{if eq $.SelectedSeries .ID}}selected{{end}}>{{.Name}}</option>
+      {{end}}
+    </select>
+  </label>
+  <label>
+    Keyword
+    <input type="search" name="q" value="{{.SelectedQuery}}" placeholder="Figure or set name">
+  </label>
   <button class="button primary" type="submit">Search</button>
 </form>
 
 {{template "search_results" .}}
+</div>
 {{end}}
 
 {{define "search_results"}}
