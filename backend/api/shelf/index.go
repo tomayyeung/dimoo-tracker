@@ -3,6 +3,7 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"dimoo-tracker-backend/internal/db"
@@ -32,6 +33,10 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if err := db.AddShelf(r.Context(), id); err != nil {
+			if errors.Is(err, db.ErrNotOwned) {
+				httpx.Error(w, http.StatusConflict, err.Error())
+				return
+			}
 			httpx.Error(w, http.StatusInternalServerError, err.Error())
 			return
 		}

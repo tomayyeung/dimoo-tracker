@@ -14,9 +14,10 @@ import (
 )
 
 var (
-	pool *pgxpool.Pool
-	once sync.Once
-	err  error
+	pool        *pgxpool.Pool
+	once        sync.Once
+	err         error
+	ErrNotOwned = errors.New("figurine is not owned")
 )
 
 // Pool creates a shared pgxpool.Pool using the DATABASE_URL environment variable.
@@ -111,7 +112,7 @@ func Shelf(ctx context.Context) ([]models.Figurine, error) {
 	return list(ctx, "shelf_items", "c.position, c.added_at")
 }
 
-// AddCollection inserts a figurine into collection_items.
+// AddCollection inserts a figurine into collection_items and removes it from wishlist_items.
 //
 // It uses ON CONFLICT DO NOTHING, so repeated adds are safe.
 func AddCollection(ctx context.Context, id string) error {
@@ -119,8 +120,18 @@ func AddCollection(ctx context.Context, id string) error {
 	if err != nil {
 		return err
 	}
-	_, err = p.Exec(ctx, `INSERT INTO collection_items (figurine_id) VALUES ($1) ON CONFLICT DO NOTHING`, id)
-	return err
+	tx, err := p.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+	if _, err := tx.Exec(ctx, `INSERT INTO collection_items (figurine_id) VALUES ($1) ON CONFLICT DO NOTHING`, id); err != nil {
+		return err
+	}
+	if _, err := tx.Exec(ctx, `DELETE FROM wishlist_items WHERE figurine_id = $1`, id); err != nil {
+		return err
+	}
+	return tx.Commit(ctx)
 }
 
 // RemoveCollection deletes a figurine from shelf_items first, then collection_items.
@@ -164,11 +175,11 @@ func RemoveWishlist(ctx context.Context, id string) error {
 	return err
 }
 
-// AddShelf adds a figurine to collection_items first, then inserts it into shelf_items.
+// AddShelf adds an owned figurine to shelf_items and removes it from wishlist_items.
 //
 // Assigns position using MAX(position) + 1.
 //
-// Wrapped in a transaction so shelf and collection state stay consistent.
+// Wrapped in a transaction so shelf and wishlist state stay consistent.
 func AddShelf(ctx context.Context, id string) error {
 	p, err := Pool(ctx)
 	if err != nil {
@@ -179,13 +190,24 @@ func AddShelf(ctx context.Context, id string) error {
 		return err
 	}
 	defer tx.Rollback(ctx)
-	if _, err := tx.Exec(ctx, `INSERT INTO collection_items (figurine_id) VALUES ($1) ON CONFLICT DO NOTHING`, id); err != nil {
+	cmd, err := tx.Exec(ctx, `
+		INSERT INTO shelf_items (figurine_id, position)
+		SELECT $1, COALESCE((SELECT MAX(position) + 1 FROM shelf_items), 1)
+		WHERE EXISTS (SELECT 1 FROM collection_items WHERE figurine_id = $1)
+		ON CONFLICT DO NOTHING`, id)
+	if err != nil {
 		return err
 	}
-	if _, err := tx.Exec(ctx, `
-		INSERT INTO shelf_items (figurine_id, position)
-		VALUES ($1, COALESCE((SELECT MAX(position) + 1 FROM shelf_items), 1))
-		ON CONFLICT DO NOTHING`, id); err != nil {
+	if cmd.RowsAffected() == 0 {
+		var owned bool
+		if err := tx.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM collection_items WHERE figurine_id = $1)`, id).Scan(&owned); err != nil {
+			return err
+		}
+		if !owned {
+			return ErrNotOwned
+		}
+	}
+	if _, err := tx.Exec(ctx, `DELETE FROM wishlist_items WHERE figurine_id = $1`, id); err != nil {
 		return err
 	}
 	return tx.Commit(ctx)
