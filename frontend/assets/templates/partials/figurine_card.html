@@ -20,7 +20,7 @@
       <form method="post" action="/actions/collection/remove" hx-post="/actions/collection/remove" hx-target="{{if eq .Active "search"}}closest .figurine-card{{else}}main.page-shell{{end}}" hx-select="{{if eq .Active "search"}}.figurine-card{{else}}main.page-shell{{end}}" hx-swap="outerHTML show:none focus-scroll:false">
         <input type="hidden" name="figurine_id" value="{{$f.ID}}">
         <input type="hidden" name="next" value="{{.Next}}">
-        <button class="button ghost" type="submit">Not owned</button>
+        <button class="button ghost" type="submit">Remove</button>
       </form>
     {{else}}
       <form method="post" action="/actions/collection/add" hx-post="/actions/collection/add" hx-target="{{if eq .Active "search"}}closest .figurine-card{{else}}main.page-shell{{end}}" hx-select="{{if eq .Active "search"}}.figurine-card{{else}}main.page-shell{{end}}" hx-swap="outerHTML show:none focus-scroll:false">
@@ -28,20 +28,20 @@
         <input type="hidden" name="next" value="{{.Next}}">
         <button class="button primary" type="submit">I have this</button>
       </form>
-    {{end}}
 
-    {{if $f.Wishlisted}}
-      <form method="post" action="/actions/wishlist/remove" hx-post="/actions/wishlist/remove" hx-target="{{if eq .Active "search"}}closest .figurine-card{{else}}main.page-shell{{end}}" hx-select="{{if eq .Active "search"}}.figurine-card{{else}}main.page-shell{{end}}" hx-swap="outerHTML show:none focus-scroll:false">
-        <input type="hidden" name="figurine_id" value="{{$f.ID}}">
-        <input type="hidden" name="next" value="{{.Next}}">
-        <button class="button ghost" type="submit">Unwish</button>
-      </form>
-    {{else}}
-      <form method="post" action="/actions/wishlist/add" hx-post="/actions/wishlist/add" hx-target="{{if eq .Active "search"}}closest .figurine-card{{else}}main.page-shell{{end}}" hx-select="{{if eq .Active "search"}}.figurine-card{{else}}main.page-shell{{end}}" hx-swap="outerHTML show:none focus-scroll:false">
-        <input type="hidden" name="figurine_id" value="{{$f.ID}}">
-        <input type="hidden" name="next" value="{{.Next}}">
-        <button class="button soft" type="submit">Wishlist</button>
-      </form>
+      {{if $f.Wishlisted}}
+        <form method="post" action="/actions/wishlist/remove" hx-post="/actions/wishlist/remove" hx-target="{{if eq .Active "search"}}closest .figurine-card{{else}}main.page-shell{{end}}" hx-select="{{if eq .Active "search"}}.figurine-card{{else}}main.page-shell{{end}}" hx-swap="outerHTML show:none focus-scroll:false">
+          <input type="hidden" name="figurine_id" value="{{$f.ID}}">
+          <input type="hidden" name="next" value="{{.Next}}">
+          <button class="button ghost" type="submit">Unwish</button>
+        </form>
+      {{else}}
+        <form method="post" action="/actions/wishlist/add" hx-post="/actions/wishlist/add" hx-target="{{if eq .Active "search"}}closest .figurine-card{{else}}main.page-shell{{end}}" hx-select="{{if eq .Active "search"}}.figurine-card{{else}}main.page-shell{{end}}" hx-swap="outerHTML show:none focus-scroll:false">
+          <input type="hidden" name="figurine_id" value="{{$f.ID}}">
+          <input type="hidden" name="next" value="{{.Next}}">
+          <button class="button soft" type="submit">Wishlist</button>
+        </form>
+      {{end}}
     {{end}}
 
     {{if $f.Owned}}
