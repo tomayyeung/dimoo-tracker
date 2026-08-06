@@ -35,6 +35,38 @@ func TestPagesRender(t *testing.T) {
 	}
 }
 
+func TestPagesBoostNavigationWithoutClearingCurrentPage(t *testing.T) {
+	backend := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.URL.Path {
+		case "/api/shelf":
+			_, _ = w.Write([]byte(`[]`))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer backend.Close()
+
+	t.Setenv("API_BASE_URL", backend.URL)
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rec := httptest.NewRecorder()
+
+	New().ServeHTTP(rec, req)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("shelf returned %d: %s", rec.Code, rec.Body.String())
+	}
+	body := rec.Body.String()
+	for _, want := range []string{
+		`hx-boost="true"`,
+		`hx-target="body"`,
+		`hx-swap="innerHTML show:none focus-scroll:false"`,
+	} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("rendered layout missing %s", want)
+		}
+	}
+}
+
 func TestFigurineCardActionsUseHTMXPageSwap(t *testing.T) {
 	backend := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
