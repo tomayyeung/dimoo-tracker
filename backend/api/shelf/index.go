@@ -14,7 +14,7 @@ import (
 // Handler serves /api/shelf requests.
 //
 // GET returns featured shelf figurines, POST accepts {"figurine_id":"..."},
-// and DELETE removes the item identified by the id query parameter.
+// PATCH swaps two shelf items, and DELETE removes the item identified by the id query parameter.
 func Handler(w http.ResponseWriter, r *http.Request) {
 	if httpx.WithCORS(w, r) {
 		return
@@ -34,6 +34,24 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		}
 		if err := db.AddShelf(r.Context(), id); err != nil {
 			if errors.Is(err, db.ErrNotOwned) {
+				httpx.Error(w, http.StatusConflict, err.Error())
+				return
+			}
+			httpx.Error(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		httpx.JSON(w, http.StatusOK, map[string]bool{"ok": true})
+	case http.MethodPatch:
+		input, ok := shelfSwapInput(w, r)
+		if !ok {
+			return
+		}
+		if input.FigurineID == input.TargetFigurineID {
+			httpx.JSON(w, http.StatusOK, map[string]bool{"ok": true})
+			return
+		}
+		if err := db.SwapShelf(r.Context(), input.FigurineID, input.TargetFigurineID); err != nil {
+			if errors.Is(err, db.ErrNotShelf) {
 				httpx.Error(w, http.StatusConflict, err.Error())
 				return
 			}
@@ -64,4 +82,13 @@ func figurineID(w http.ResponseWriter, r *http.Request) (string, bool) {
 		return "", false
 	}
 	return input.FigurineID, true
+}
+
+func shelfSwapInput(w http.ResponseWriter, r *http.Request) (models.ShelfSwapInput, bool) {
+	var input models.ShelfSwapInput
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil || input.FigurineID == "" || input.TargetFigurineID == "" {
+		httpx.Error(w, http.StatusBadRequest, "figurine_id and target_figurine_id are required")
+		return models.ShelfSwapInput{}, false
+	}
+	return input, true
 }

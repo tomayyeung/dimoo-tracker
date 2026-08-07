@@ -158,6 +158,51 @@ input:focus, select:focus, .button:focus-visible, .tab:focus-visible, .shelf-car
   outline-offset: 2px;
 }
 
+.shelf-slot {
+  display: grid;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.shelf-slot.is-dragging { cursor: grabbing; }
+
+.shelf-slot img {
+  -webkit-user-drag: none;
+}
+
+.shelf-slot.is-drag-preview .shelf-card-button {
+  opacity: 0.48;
+}
+
+.shelf-slot.is-drop-target .shelf-card-art {
+  outline: 2px dashed rgba(217, 93, 79, 0.42);
+  outline-offset: 0.3rem;
+}
+
+.is-shelf-dragging .shelf-stage,
+.is-shelf-dragging .shelf-grid,
+.is-shelf-dragging .shelf-slot {
+  overflow-anchor: none;
+}
+
+.shelf-drag-ghost {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  pointer-events: none;
+  opacity: 0.94;
+  filter: drop-shadow(0 1rem 1.4rem rgba(53, 43, 36, 0.24));
+  transform-origin: top left;
+  will-change: transform;
+}
+
+.shelf-drag-ghost .shelf-card {
+  min-height: 0;
+  transform: scale(1.03);
+}
+
 .figurine-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -212,7 +257,7 @@ input:focus, select:focus, .button:focus-visible, .tab:focus-visible, .shelf-car
   background: transparent;
   border: 0;
   cursor: pointer;
-  transition: transform 160ms ease;
+  transition: opacity 140ms ease, transform 160ms ease;
 }
 
 .shelf-card-button:hover {

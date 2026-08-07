@@ -114,6 +114,17 @@ func (c Client) RemoveShelf(ctx context.Context, id string) error {
 	return c.deleteID(ctx, "/api/shelf", id)
 }
 
+// SwapShelf swaps two occupied display shelf positions.
+func (c Client) SwapShelf(ctx context.Context, id, targetID string) error {
+	body, _ := json.Marshal(map[string]string{"figurine_id": id, "target_figurine_id": targetID})
+	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, c.BaseURL+"/api/shelf", bytes.NewReader(body))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return c.do(req, nil)
+}
+
 func (c Client) get(ctx context.Context, path string, out any) error {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.BaseURL+path, nil)
 	if err != nil {

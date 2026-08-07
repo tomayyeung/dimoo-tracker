@@ -173,6 +173,8 @@ func (a App) action(w http.ResponseWriter, r *http.Request) {
 		err = a.backend.AddShelf(r.Context(), id)
 	case "/actions/shelf/remove":
 		err = a.backend.RemoveShelf(r.Context(), id)
+	case "/actions/shelf/swap":
+		err = a.backend.SwapShelf(r.Context(), id, r.FormValue("target_figurine_id"))
 	default:
 		http.NotFound(w, r)
 		return
@@ -273,11 +275,15 @@ func (a App) pageForNext(r *http.Request, next string) (string, PageData) {
 
 func (a App) static(w http.ResponseWriter, r *http.Request) {
 	name := strings.TrimPrefix(path.Clean(r.URL.Path), "/")
-	if name != "static/styles.css" {
+	switch name {
+	case "static/styles.css":
+		w.Header().Set("Content-Type", "text/css; charset=utf-8")
+	case "static/shelf.js":
+		w.Header().Set("Content-Type", "application/javascript; charset=utf-8")
+	default:
 		http.NotFound(w, r)
 		return
 	}
-	w.Header().Set("Content-Type", "text/css; charset=utf-8")
 	data, err := assets.Files.ReadFile(name)
 	if err != nil {
 		http.NotFound(w, r)

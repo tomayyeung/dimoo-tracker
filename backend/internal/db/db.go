@@ -10,6 +10,7 @@ import (
 
 	"dimoo-tracker-backend/internal/models"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -18,6 +19,7 @@ var (
 	once        sync.Once
 	err         error
 	ErrNotOwned = errors.New("figurine is not owned")
+	ErrNotShelf = errors.New("figurine is not on shelf")
 )
 
 // Pool creates a shared pgxpool.Pool using the DATABASE_URL environment variable.
@@ -221,6 +223,50 @@ func RemoveShelf(ctx context.Context, id string) error {
 	}
 	_, err = p.Exec(ctx, `DELETE FROM shelf_items WHERE figurine_id = $1`, id)
 	return err
+}
+
+// SwapShelf swaps the positions of two figurines that are already on the shelf.
+func SwapShelf(ctx context.Context, id, targetID string) error {
+	p, err := Pool(ctx)
+	if err != nil {
+		return err
+	}
+	tx, err := p.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	if _, err := tx.Exec(ctx, `
+		WITH ordered AS (
+			SELECT figurine_id, row_number() OVER (ORDER BY position, added_at, figurine_id)::integer AS normalized_position
+			FROM shelf_items
+		)
+		UPDATE shelf_items
+		SET position = ordered.normalized_position
+		FROM ordered
+		WHERE shelf_items.figurine_id = ordered.figurine_id`); err != nil {
+		return err
+	}
+
+	var position, targetPosition int
+	if err := tx.QueryRow(ctx, `
+		SELECT a.position, b.position
+		FROM shelf_items a
+		JOIN shelf_items b ON b.figurine_id = $2
+		WHERE a.figurine_id = $1`, id, targetID).Scan(&position, &targetPosition); err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return ErrNotShelf
+		}
+		return err
+	}
+	if _, err := tx.Exec(ctx, `
+		UPDATE shelf_items
+		SET position = CASE figurine_id WHEN $1 THEN $4 WHEN $2 THEN $3 ELSE position END
+		WHERE figurine_id IN ($1, $2)`, id, targetID, position, targetPosition); err != nil {
+		return err
+	}
+	return tx.Commit(ctx)
 }
 
 // IPs returns distinct non-empty intellectual property names from catalog series.

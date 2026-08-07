@@ -1,6 +1,7 @@
 package app
 
 import (
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -25,7 +26,7 @@ func TestPagesRender(t *testing.T) {
 	t.Setenv("API_BASE_URL", backend.URL)
 	app := New()
 
-	for _, path := range []string{"/", "/collection", "/search", "/wishlist", "/static/styles.css"} {
+	for _, path := range []string{"/", "/collection", "/search", "/wishlist", "/static/styles.css", "/static/shelf.js"} {
 		req := httptest.NewRequest(http.MethodGet, path, nil)
 		rec := httptest.NewRecorder()
 		app.ServeHTTP(rec, req)
@@ -128,6 +129,8 @@ func TestShelfCardsUsePopupDetails(t *testing.T) {
 	body := rec.Body.String()
 	for _, want := range []string{
 		`class="shelf-grid"`,
+		`class="shelf-slot"`,
+		`data-shelf-card data-figurine-id="fig-1"`,
 		`class="shelf-card-button"`,
 		`popovertarget="shelf-popover-fig-1"`,
 		`id="shelf-popover-fig-1" popover`,
@@ -331,6 +334,43 @@ func TestHTMXActionReturnsPageShellFragment(t *testing.T) {
 	}
 	if strings.Contains(body, "<!doctype html>") {
 		t.Fatal("HTMX action response should not include the full document")
+	}
+}
+
+func TestShelfSwapActionCallsBackendPatch(t *testing.T) {
+	backend := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch {
+		case r.URL.Path == "/api/shelf" && r.Method == http.MethodPatch:
+			body, _ := io.ReadAll(r.Body)
+			got := string(body)
+			if !strings.Contains(got, `"figurine_id":"fig-1"`) || !strings.Contains(got, `"target_figurine_id":"fig-2"`) {
+				t.Fatalf("PATCH body = %s", got)
+			}
+			w.WriteHeader(http.StatusNoContent)
+		case r.URL.Path == "/api/shelf" && r.Method == http.MethodGet:
+			_, _ = w.Write([]byte(`[
+				{"id":"fig-2","series_id":"series-1","series_name":"Dimoo Dream Travel","name":"Second","rarity":"standard","owned":true,"wishlisted":false,"on_shelf":true},
+				{"id":"fig-1","series_id":"series-1","series_name":"Dimoo Dream Travel","name":"First","rarity":"standard","owned":true,"wishlisted":false,"on_shelf":true}
+			]`))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer backend.Close()
+
+	t.Setenv("API_BASE_URL", backend.URL)
+	req := httptest.NewRequest(http.MethodPost, "/actions/shelf/swap", strings.NewReader("figurine_id=fig-1&target_figurine_id=fig-2&next=/"))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("HX-Request", "true")
+	rec := httptest.NewRecorder()
+
+	New().ServeHTTP(rec, req)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("action returned %d, want %d: %s", rec.Code, http.StatusOK, rec.Body.String())
+	}
+	if !strings.Contains(rec.Body.String(), `<main class="page-shell">`) {
+		t.Fatal("swap action should return the refreshed page shell")
 	}
 }
 

@@ -27,3 +27,9 @@ type Figurine struct {
 type FigurineInput struct {
 	FigurineID string `json:"figurine_id"`
 }
+
+// ShelfSwapInput is the PATCH body for swapping two occupied shelf positions.
+type ShelfSwapInput struct {
+	FigurineID       string `json:"figurine_id"`
+	TargetFigurineID string `json:"target_figurine_id"`
+}

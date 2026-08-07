@@ -1,57 +1,59 @@
 {{define "shelf_card"}}
 {{$f := .Figurine}}
 {{$popoverID := printf "shelf-popover-%s" $f.ID}}
-<article class="shelf-card {{if eq $f.Rarity "secret"}}secret{{end}}">
-  <button class="shelf-card-button" type="button" popovertarget="{{$popoverID}}" aria-label="View details for {{$f.Name}}">
-    <span class="shelf-card-art">
+<div class="shelf-slot" data-shelf-card data-figurine-id="{{$f.ID}}">
+  <article class="shelf-card {{if eq $f.Rarity "secret"}}secret{{end}}">
+    <button class="shelf-card-button" type="button" popovertarget="{{$popoverID}}" aria-label="View details for {{$f.Name}}">
+      <span class="shelf-card-art">
+        {{if $f.ImageURL}}
+          <img src="{{$f.ImageURL}}" alt="{{$f.Name}}">
+        {{else}}
+          <span>{{$f.Name}}</span>
+        {{end}}
+      </span>
+      <span class="shelf-card-name">{{$f.Name}}</span>
+    </button>
+  </article>
+
+  <div class="shelf-popover {{if eq $f.Rarity "secret"}}secret{{end}}" id="{{$popoverID}}" popover>
+    <button class="popover-close" type="button" popovertarget="{{$popoverID}}" popovertargetaction="hide" aria-label="Close details for {{$f.Name}}">&times;</button>
+    <div class="popover-art">
       {{if $f.ImageURL}}
         <img src="{{$f.ImageURL}}" alt="{{$f.Name}}">
       {{else}}
         <span>{{$f.Name}}</span>
       {{end}}
-    </span>
-    <span class="shelf-card-name">{{$f.Name}}</span>
-  </button>
-</article>
-
-<div class="shelf-popover {{if eq $f.Rarity "secret"}}secret{{end}}" id="{{$popoverID}}" popover>
-  <button class="popover-close" type="button" popovertarget="{{$popoverID}}" popovertargetaction="hide" aria-label="Close details for {{$f.Name}}">&times;</button>
-  <div class="popover-art">
-    {{if $f.ImageURL}}
-      <img src="{{$f.ImageURL}}" alt="{{$f.Name}}">
-    {{else}}
-      <span>{{$f.Name}}</span>
-    {{end}}
-  </div>
-  <div class="popover-body">
-    <div class="card-title-row">
-      <h2>{{$f.Name}}</h2>
-      <span class="rarity">{{if eq $f.Rarity "secret"}}&#9733; {{end}}{{$f.Rarity}}</span>
     </div>
-    <p>{{$f.SeriesName}}</p>
-  </div>
-  <div class="card-actions">
-    {{if $f.Owned}}
-      <form method="post" action="/actions/collection/remove" hx-post="/actions/collection/remove" hx-target="main.page-shell" hx-select="main.page-shell" hx-swap="outerHTML show:none focus-scroll:false">
-        <input type="hidden" name="figurine_id" value="{{$f.ID}}">
-        <input type="hidden" name="next" value="{{.Next}}">
-        <button class="button ghost" type="submit">Remove</button>
-      </form>
-    {{else}}
-      <form method="post" action="/actions/collection/add" hx-post="/actions/collection/add" hx-target="main.page-shell" hx-select="main.page-shell" hx-swap="outerHTML show:none focus-scroll:false">
-        <input type="hidden" name="figurine_id" value="{{$f.ID}}">
-        <input type="hidden" name="next" value="{{.Next}}">
-        <button class="button primary" type="submit">I have this</button>
-      </form>
-    {{end}}
+    <div class="popover-body">
+      <div class="card-title-row">
+        <h2>{{$f.Name}}</h2>
+        <span class="rarity">{{if eq $f.Rarity "secret"}}&#9733; {{end}}{{$f.Rarity}}</span>
+      </div>
+      <p>{{$f.SeriesName}}</p>
+    </div>
+    <div class="card-actions">
+      {{if $f.Owned}}
+        <form method="post" action="/actions/collection/remove" hx-post="/actions/collection/remove" hx-target="main.page-shell" hx-select="main.page-shell" hx-swap="outerHTML show:none focus-scroll:false">
+          <input type="hidden" name="figurine_id" value="{{$f.ID}}">
+          <input type="hidden" name="next" value="{{.Next}}">
+          <button class="button ghost" type="submit">Remove</button>
+        </form>
+      {{else}}
+        <form method="post" action="/actions/collection/add" hx-post="/actions/collection/add" hx-target="main.page-shell" hx-select="main.page-shell" hx-swap="outerHTML show:none focus-scroll:false">
+          <input type="hidden" name="figurine_id" value="{{$f.ID}}">
+          <input type="hidden" name="next" value="{{.Next}}">
+          <button class="button primary" type="submit">I have this</button>
+        </form>
+      {{end}}
 
-    {{if $f.Owned}}
-      <form method="post" action="/actions/shelf/remove" hx-post="/actions/shelf/remove" hx-target="main.page-shell" hx-select="main.page-shell" hx-swap="outerHTML show:none focus-scroll:false">
-        <input type="hidden" name="figurine_id" value="{{$f.ID}}">
-        <input type="hidden" name="next" value="{{.Next}}">
-        <button class="button ghost" type="submit">Take off shelf</button>
-      </form>
-    {{end}}
+      {{if $f.Owned}}
+        <form method="post" action="/actions/shelf/remove" hx-post="/actions/shelf/remove" hx-target="main.page-shell" hx-select="main.page-shell" hx-swap="outerHTML show:none focus-scroll:false">
+          <input type="hidden" name="figurine_id" value="{{$f.ID}}">
+          <input type="hidden" name="next" value="{{.Next}}">
+          <button class="button ghost" type="submit">Take off shelf</button>
+        </form>
+      {{end}}
+    </div>
   </div>
 </div>
 {{end}}
