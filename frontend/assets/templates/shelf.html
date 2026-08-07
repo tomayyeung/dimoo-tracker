@@ -10,7 +10,11 @@
 
 {{if .Figurines}}
   <div class="shelf-stage">
-    {{template "figurine_grid" .}}
+    <div class="shelf-grid">
+      {{range .Figurines}}
+        {{template "shelf_card" dict . $.Active $.Next}}
+      {{end}}
+    </div>
   </div>
 {{else}}
   <section class="empty-state">

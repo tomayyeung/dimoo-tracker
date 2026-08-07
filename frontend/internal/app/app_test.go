@@ -105,6 +105,44 @@ func TestFigurineCardActionsUseHTMXPageSwap(t *testing.T) {
 	}
 }
 
+func TestShelfCardsUsePopupDetails(t *testing.T) {
+	backend := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.URL.Path {
+		case "/api/shelf":
+			_, _ = w.Write([]byte(`[{"id":"fig-1","series_id":"series-1","series_name":"Dimoo Dream Travel","name":"Cloud Boarding Pass","rarity":"standard","owned":true,"wishlisted":false,"on_shelf":true}]`))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer backend.Close()
+
+	t.Setenv("API_BASE_URL", backend.URL)
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rec := httptest.NewRecorder()
+
+	New().ServeHTTP(rec, req)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("shelf returned %d: %s", rec.Code, rec.Body.String())
+	}
+	body := rec.Body.String()
+	for _, want := range []string{
+		`class="shelf-grid"`,
+		`class="shelf-card-button"`,
+		`popovertarget="shelf-popover-fig-1"`,
+		`id="shelf-popover-fig-1" popover`,
+		`hx-post="/actions/shelf/remove"`,
+		`Take off shelf`,
+	} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("rendered shelf missing %s", want)
+		}
+	}
+	if strings.Contains(body, `<article class="figurine-card`) {
+		t.Fatal("shelf should not render full figurine cards inline")
+	}
+}
+
 func TestSearchSendsIPFilter(t *testing.T) {
 	backend := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
